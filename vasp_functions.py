@@ -169,6 +169,11 @@ def workflow_is_converged(pwd):
         return True
     else:
         return Fasle
+def write_workflow_convergence_file(pwd, value):
+    convergence_file = os.path.join(pwd,'WORKFLOW_CONVERGENCE')
+    with open(convergence_file, 'w') as f:
+        f.write('WORKFLOW_CONVERGED = '+str(value))
+        f.close()
     
     
     
