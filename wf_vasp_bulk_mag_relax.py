@@ -24,6 +24,9 @@ def gen_input():
 def check_converged():
   pwd = os.getcwd()
   if workflow_converged(pwd) == True:
+    write_workflow_convergence_file(pwd, True)
+  else:
+    write_workflow_convergence_file(pwd, False)
   
 
 for root, dirs, files in os.walk(pwd):
