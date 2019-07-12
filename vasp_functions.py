@@ -169,12 +169,29 @@ def workflow_is_converged(pwd):
         return True
     else:
         return Fasle
+    
 def write_workflow_convergence_file(pwd, value):
     convergence_file = os.path.join(pwd,'WORKFLOW_CONVERGENCE')
     with open(convergence_file, 'w') as f:
         f.write('WORKFLOW_CONVERGED = '+str(value))
         f.close()
+        
+def get_minimum_energy_job(pwd):
+    min_energy = 1000
+    for root, dirs, files in os.walk(pwd):
+            for file in files:
+                if file == 'POTCAR' and if check_vasp_input(root) == True:                  
+                    Vr = Vasprun(os.path.join(root, 'vasprun.xml'))
+                    if Vr.final_energy < min_energy:
+                        min_energy = Vr.final_energy
+                        job_path = root
+    return root                    
     
+def get_workflow_stage_number(pwd):
+    workflow_stage = Incar().from_file(os.path.join(root,'WORKFLOW_STAGE'))
+    current_workflow_stage_number = workflow_stage['WORKFLOW_STAGE_NUMBER']
+    
+    return current_workflow_stage_number
     
     
 def rerun_job(job_type, job_name):
