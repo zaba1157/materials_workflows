@@ -90,7 +90,7 @@ def fizzled_job(path):
                 raise Exception('Copy CONVERGENCE file into execution directory to run multistep job. Delete STAGE_NUMBER tag from INCAR for single step job.')
                 
             current_stage_number = get_incar_value(path, 'STAGE_NUMBER')
-            print('Rerunning '+job_name+' stage '+str(current_stage_number)+' of '+str(max_stage_number))
+            #print('Rerunning '+job_name+' stage '+str(current_stage_number)+' of '+str(max_stage_number))
             rerun = 'multi'               
             
         else:
@@ -98,64 +98,48 @@ def fizzled_job(path):
    
     return rerun
     
-    
+
+                        
 def is_converged(path):
-    job_name = get_job_name(path)
     rerun = False
-    if not_in_queue(path) == True:  # Continue if job is not in queue  
-        if 'STAGE_NUMBER' in open(os.path.join(path,'INCAR')).read():
-            if os.path.exists(os.path.join(path,'CONVERGENCE')):
-                with open('CONVERGENCE') as fd:
-                    pairs = (line.split(None) for line in fd)
-                    res   = {int(pair[0]):pair[1] for pair in pairs if len(pair) == 2 and pair[0].isdigit()}
-                    max_stage_number = len(res)-1
-                    fd.close()
-            else:
-                raise Exception('Copy CONVERGENCE file into execution directory to run multistep job. Delete STAGE_NUMBER tag from INCAR for single step job.')
-                
-            current_stage_number = get_incar_value(path, 'STAGE_NUMBER')
-                    
-            if current_stage_number < max_stage_number:
-                rerun = 'multi'    #RERUN JOB
-                print('Rerunning '+job_name+' stage '+str(current_stage_number)+' of '+str(max_stage_number))
-            elif current_stage_number == max_stage_number:
-                Vr = Vasprun(os.path.join(path, 'vasprun.xml'))
-                if Vr.converged != True:        #Job not converge
-                    if Vr.converged_electronic != True:
-                        replace_incar_tags(path,'NELM',500) #increase number of electronic steps
-                        print('Increased NELM to 500 max steps for electronic convergence.')
-                        rerun = 'multi'  #RERUN JOB
-                    elif Vr.converged_ionic != True and int(get_incar_value(path, 'NSW')) == 0:
-                        print(job_name + ' Assuming you do not want to resubmit job! Single point energy calculation: converged_electronic = TRUE, converged_ionic = FALSE')
-                        rerun = 'converged'
-                    else:
-                        print('Rerunning '+job_name+' stage '+str(current_stage_number)+' of '+str(max_stage_number))
-                        rerun = 'multi'  #RERUN JOB    Catch-all for all other errors
-                   
-                else:
-                    print(job_name + ' Complete and ready for post processing.') #Job has completed #post processing bader lobster bandstructure defects adsorbates ect...
-                    rerun = 'converged'
-                    
-    
-        elif 'IMAGES' in open(os.path.join(path,'INCAR')).read():
-            print('DOES NOT HANDLE NEB YET')
-            
-        else:                               #Single Relax not NEB job
+    if 'STAGE_NUMBER' in open(os.path.join(path,'INCAR')).read():
+        if os.path.exists(os.path.join(path,'CONVERGENCE')):
+            with open('CONVERGENCE') as fd:
+                pairs = (line.split(None) for line in fd)
+                res   = {int(pair[0]):pair[1] for pair in pairs if len(pair) == 2 and pair[0].isdigit()}
+                max_stage_number = len(res)-1
+                fd.close()
+        else:
+            raise Exception('Copy CONVERGENCE file into execution directory to run multistep job. Delete STAGE_NUMBER tag from INCAR for single step job.')
+
+        current_stage_number = get_incar_value(path, 'STAGE_NUMBER')
+
+        if current_stage_number < max_stage_number:
+            rerun = 'multi'    #RERUN JOB
+        elif current_stage_number == max_stage_number:
             Vr = Vasprun(os.path.join(path, 'vasprun.xml'))
             if Vr.converged != True:        #Job not converge
-                if Vr.converged_electronic != True:
-                    replace_incar_tags(path,'NELM',500) #increase number of electronic steps
-                    print('Increased NELM to 500 max steps for electronic convergence.')
-                    rerun = 'single'  #RERUN JOB
-                elif Vr.converged_ionic != True and int(get_incar_value(path, 'NSW')) == 0:
-                    print(job_name + ' Assuming you do not want to resubmit job!! Single point energy calculation: converged_electronic = TRUE, converged_ionic = FALSE')
-                    rerun = 'converged'
-                else:
-                    rerun = 'single'  #RERUN JOB    Catch-all for all other errors
-               
+                pass
+
             else:
-                print(job_name + ' Complete and ready for post processing.') #Job has completed #post processing bader lobster bandstructure ect...
                 rerun = 'converged'
+
+
+    elif 'IMAGES' in open(os.path.join(path,'INCAR')).read():
+        print('DOES NOT HANDLE NEB YET')
+
+    else:                               #Single Relax not NEB job
+        Vr = Vasprun(os.path.join(path, 'vasprun.xml'))
+        if Vr.converged != True:        #Job not converge
+            if Vr.converged_electronic != True:
+                rerun = 'single'  #RERUN JOB
+            elif Vr.converged_ionic != True and int(get_incar_value(path, 'NSW')) == 0:
+                rerun = 'converged'
+            else:
+                rerun = 'single'  #RERUN JOB    Catch-all for all other errors
+
+        else:
+            rerun = 'converged'
 
         return rerun
     
@@ -164,6 +148,29 @@ def check_vasp_input(path):
         return True
     else:
         return False
+    
+def workflow_is_converged(pwd):
+    workflow_converged_list = []
+    for root, dirs, files in os.walk(pwd):
+            for file in files:
+                if file == 'POTCAR' and if check_vasp_input(root) == True:                  
+                    if os.path.exists(os.path.join(root,'vasprun.xml')):
+                        try: 
+                            Vr = Vasprun(os.path.join(root, 'vasprun.xml'))
+                            fizzled = False                                
+                        except:
+                            fizzled = True
+                            workflow_converged_list.append(False)
+                        if fizzled == False:    
+                            job = is_converged(root)
+                            if job == 'converged':
+                                workflow_converged_list.append(True)
+    if False not in workflow_converged_list:
+        return True
+    else:
+        return Fasle
+    
+    
     
 def rerun_job(job_type, job_name):
     if job_type == 'multi':
