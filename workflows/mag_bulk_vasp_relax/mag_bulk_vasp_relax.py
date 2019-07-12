@@ -12,16 +12,15 @@ Creates magnetic structures and vasp input including bulk relax convergence file
 import os
 from pymatgen.io.vasp.sets import MPRelaxSet,batch_write_input
 from pymatgen.io.vasp.inputs import Poscar
-from analyzer import MagneticStructureEnumerator
+from materials-workflows.magnetism.analyzer import MagneticStructureEnumerator
 from shutil import copyfile
 
-
-
-pwd = os.getcwd()
-structure = Poscar.from_file(os.path.join(pwd,'POSCAR'))
-mag_structures = MagneticStructureEnumerator(structure)
-batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
-                  output_dir=os.path.join(pwd,'mag_bulk_vasp_relax'))
+def gen_input():
+  pwd = os.getcwd()
+  structure = Poscar.from_file(os.path.join(pwd,'POSCAR'))
+  mag_structures = MagneticStructureEnumerator(structure)
+  batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
+                    output_dir=os.path.join(pwd,'mag_bulk_vasp_relax'))
 
 for root, dirs, files in os.walk(pwd):
     for file in files:
