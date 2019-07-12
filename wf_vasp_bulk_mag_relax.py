@@ -12,6 +12,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet,batch_write_input
 from pymatgen.io.vasp.inputs import Poscar
 from materials-workflows.magnetism.analyzer import MagneticStructureEnumerator
 from shutil import copyfile
+from materials-workflows.vasp_functions import *
 
 def gen_input():
   pwd = os.getcwd()
@@ -21,6 +22,8 @@ def gen_input():
                     output_dir=os.path.join(pwd,'mag_bulk_vasp_relax'))
   
 def check_converged():
+  pwd = os.getcwd()
+  if workflow_converged(pwd) == True:
   
 
 for root, dirs, files in os.walk(pwd):
