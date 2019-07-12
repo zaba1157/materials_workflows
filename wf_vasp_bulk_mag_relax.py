@@ -19,6 +19,9 @@ def gen_input():
   mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
                     output_dir=os.path.join(pwd,'mag_bulk_vasp_relax'))
+  
+def check_converged():
+  
 
 for root, dirs, files in os.walk(pwd):
     for file in files:
