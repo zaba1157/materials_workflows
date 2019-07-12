@@ -11,7 +11,7 @@ import os
 from pymatgen.io.vasp.sets import MPRelaxSet,batch_write_input
 from pymatgen.io.vasp.inputs import Poscar
 from materials-workflows.magnetism.analyzer import MagneticStructureEnumerator
-from shutil import copyfile
+from shutil import copyfile, move
 from materials-workflows.vasp_functions import *
 
 def gen_input():
@@ -19,12 +19,18 @@ def gen_input():
   structure = Poscar.from_file(os.path.join(pwd,'POSCAR'))
   mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
-                    output_dir=os.path.join(pwd,'mag_bulk_vasp_relax'))
+                    output_dir=os.path.join(pwd,'vasp_bulk_mag_relax'))
   
 def check_converged():
   pwd = os.getcwd()
   if workflow_converged(pwd) == True:
     write_workflow_convergence_file(pwd, True)
+    job_path = get_minimum_energy_job(pwd)
+    stage_number = get_workflow_stage_number(pwd)
+    job_to_pass = os.path.join(pwd,str(stage_number)+'_final')
+    for root, dirs, files in os.walk(job_path):
+        for file in files:
+          move(os.path.join(root,file),job_to_pass)  
   else:
     write_workflow_convergence_file(pwd, False)
   
