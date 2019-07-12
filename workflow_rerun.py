@@ -348,7 +348,7 @@ def driver():
     pwd = os.getcwd()
     other_calculators_in_workflow = workflow_progress(pwd)
         
-    num_jobs_in_workflow = check_num_jobs_in_workflow(pwd)  #only checks for vasp jobs
+    num_jobs_in_workflow = check_num_jobs_in_workflow(pwd)  #currently only checks for vasp jobs
         
     if num_jobs_in_workflow > 1 or other_calculators_in_workflow == True:
         if os.path.exists(os.path.join(pwd,'WORKFLOW_NAME')):
