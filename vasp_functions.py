@@ -175,7 +175,13 @@ def write_workflow_convergence_file(pwd, value):
     with open(convergence_file, 'w') as f:
         f.write('WORKFLOW_CONVERGED = '+str(value))
         f.close()
+def write_vasp_convergence_file(path, writelines):
+    with open(os.path.join(path,'CONVERGENCE'),'w') as f:
+        for line in writelines:
+            f.write("%s\n" % line)
+        f.close()
         
+  
 def get_minimum_energy_job(pwd):
     min_energy = 1000
     for root, dirs, files in os.walk(pwd):
