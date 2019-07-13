@@ -263,9 +263,11 @@ def vasp_run_main(pwd):
 
 def workflow_progress(pwd):
     other_calculators_in_workflow = False
+    workflow_commands_in_workflow = False
     for root, dirs, files in os.walk(pwd):
         for file in files:
-            if file == 'WORKFLOW_COMMANDS':                
+            if file == 'WORKFLOW_COMMANDS':
+                workflow_commands_in_workflow = True
                 with open(os.path.join(root,'WORKFLOW_COMMANDS')) as fd:
                     pairs = (line.split(None) for line in fd)
                     workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
@@ -282,10 +284,12 @@ def workflow_progress(pwd):
                         rerun_command = None
                         upgrade_workflow_list = []
                         for workflow_command in workflow_commands_dict:
+                            workflow_stage_name = str(workflow_run_directory_dict[workflow_command])
+                            workflow_path = os.path.join(root,workflow_stage_name)
                             if workflow_commands_dict[workflow_command] > max_workflow_stage_number:
                                 max_workflow_stage_number = workflow_commands_dict[workflow_command]
                             if workflow_commands_dict[workflow_command] == int(current_workflow_stage_number):
-                                workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command]))
+                                
                                 os.chdir(workflow_path)
                                 convergence_file = os.path.join(workflow_path,'WORKFLOW_CONVERGENCE')
                                 if os.path.exists(convergence_file):
@@ -335,23 +339,33 @@ def workflow_progress(pwd):
                     current_workflow_stage_number=0
                     for workflow_command in workflow_commands_dict:
                         if workflow_commands_dict[workflow_command] == int(current_workflow_stage_number):
-                            workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command]))
+                            workflow_stage_name = str(workflow_run_directory_dict[workflow_command])
+                            workflow_path = os.path.join(root,workflow_stage_name)
                             os.chdir(workflow_path)
                             os.system(workflow_command)
                             rerun_command = str(workflow_rerun_command_dict[workflow_command])
                             if rerun_command != 'vasp_run' or 'vasp' or 'Vasp':                                   
                                 os.system(rerun_command)
                                 other_calculators_in_workflow = True
-                                
-                return other_calculators_in_workflow
+                            else:
+                                for rt, ds, fs in os.walk(pwd):
+                                    for fle in fs:
+                                        if fle == 'POTCAR' and check_vasp_input(root) == True:
+                                            
+                                            if 'SYSTEM' in open(os.path.join(path,'INCAR')).read():
+                                                if workflow_stage_name #########################################
+                                            
+                                            
+                return other_calculators_in_workflow, workflow_commands_in_workflow
 
 def driver():
     pwd = os.getcwd()
-    other_calculators_in_workflow = workflow_progress(pwd)
+    other_calculators_in_workflow, workflow_commands_in_workflow  = workflow_progress(pwd)
         
     num_jobs_in_workflow = check_num_jobs_in_workflow(pwd)  #currently only checks for vasp jobs
-        
-    if num_jobs_in_workflow > 1 or other_calculators_in_workflow == True:
+    
+    
+    if num_jobs_in_workflow > 1 or other_calculators_in_workflow == True or workflow_commands_in_workflow == True :
         if os.path.exists(os.path.join(pwd,'WORKFLOW_NAME')):
             workflow_file = Incar().from_file(os.path.join(pwd,'WORKFLOW_NAME'))
             workflow_name = workflow_file['NAME']
@@ -363,7 +377,7 @@ def driver():
                 writeline = 'NAME = '+str(workflow_name)
                 f.write(writeline)
                 f.close()        
-            
+            check_job_names()
         computed_entries = vasp_run_main(pwd)
                 
     else:
