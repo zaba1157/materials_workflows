@@ -13,7 +13,7 @@ from pymatgen.io.vasp.inputs import Poscar
 from materials-workflows.magnetism.analyzer import MagneticStructureEnumerator
 from shutil import copyfile, move
 from materials-workflows.vasp_functions import *
-from materials-workflows.convergence_inputs import bulk_relax
+from materials-workflows.convergence_inputs import bulk_convergence
 
 def gen_input():
   pwd = os.getcwd()
@@ -21,6 +21,18 @@ def gen_input():
   mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
                     output_dir=os.path.join(pwd,'vasp_bulk_mag_relax'))
+  for root, dirs, files in os.walk(os.path.join(pwd,'vasp_bulk_mag_relax')):
+      for file in files:
+          if file == 'KPOINTS':
+              with open('KPOINTS','r') as k:
+                  linecount = 0
+                  for line in k:
+                      if linecount == 3:
+                          kpts_line = line
+                          break
+                      linecount+=1
+              k.close()
+              convergence_writelines = bulk_convergence(str(kpts_line))      
   
 def check_converged():
   pwd = os.getcwd()
