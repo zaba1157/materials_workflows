@@ -195,8 +195,20 @@ def store_data(vasprun_obj,job_name):
     entry_obj["entry_id"] = job_name
     
     return entry_obj     
-
-
+def default_workflow_nameing(pwd, workflow_stage_name):
+    for rt, ds, fs in os.walk(pwd):
+        for fle in fs:
+            if fle == 'POTCAR' and check_vasp_input(root) == True:
+                    struct = Poscar.from_file(os.path.join(root,'POSCAR')).structure
+                    formula = str(struct.composition.reduced_formula)
+                    directories = root.split(os.sep)
+                    if workflow_stage_name != directories[-2] or directories[-1]:
+                        name =  formula+'-'+directories[-1]+'-'+directories[-2]+'-'+workflow_stage_name
+                    elif workflow_stage_name == directories[-2]:                 
+                        name =  formula+'-'+directories[-1]+'-'+workflow_stage_name
+                    elif workflow_stage_name == directories[-1]:
+                        name = formula+'-'+workflow_stage_name
+                    replace_incar_tags(path,'SYSTEM', name)
 
 def vasp_run_main(pwd):
     completed_jobs, computed_entries = [], []              
@@ -321,6 +333,7 @@ def workflow_progress(pwd):
                                 replace(os.path.join(root,'WORKFLOW_STAGE'), str(current_workflow_stage_number), str(current_workflow_stage_number+1))
                                 current_workflow_stage_number+=1
                                 for workflow_command in workflow_commands_dict:
+                                    workflow_stage_name = str(workflow_run_directory_dict[workflow_command])
                                     if workflow_commands_dict[workflow_command] == int(current_workflow_stage_number):
                                         workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command]))
                                         os.chdir(workflow_path)
@@ -329,6 +342,8 @@ def workflow_progress(pwd):
                                         if rerun_command != 'vasp_run' or 'vasp' or 'Vasp':                                 
                                             os.system(rerun_command)
                                             other_calculators_in_workflow = True
+                                        else:
+                                            default_workflow_nameing(workflow_path, workflow_stage_name)
                             elif current_workflow_stage_number == max_workflow_stage_number:
                                 #name = str(workflow_run_directory_dict[workflow_command])
                                 print('\n'+root+': WORKFLOW COMPLETE \n')
@@ -348,12 +363,7 @@ def workflow_progress(pwd):
                                 os.system(rerun_command)
                                 other_calculators_in_workflow = True
                             else:
-                                for rt, ds, fs in os.walk(pwd):
-                                    for fle in fs:
-                                        if fle == 'POTCAR' and check_vasp_input(root) == True:
-                                            
-                                            if 'SYSTEM' in open(os.path.join(path,'INCAR')).read():
-                                                if workflow_stage_name #########################################
+                                default_workflow_nameing(workflow_path, workflow_stage_name)
                                             
                                             
                 return other_calculators_in_workflow, workflow_commands_in_workflow
@@ -377,7 +387,7 @@ def driver():
                 writeline = 'NAME = '+str(workflow_name)
                 f.write(writeline)
                 f.close()        
-            check_job_names()
+            
         computed_entries = vasp_run_main(pwd)
                 
     else:
@@ -389,7 +399,10 @@ def driver():
     else:        
         with open(os.path.join(pwd,str(workflow_name) +'_converged.json'),'w') as f:
             json.dump(computed_entries, f)    
-        
+    
+    
+if __name__ == '__main__':
+    driver()
 
 
 
