@@ -13,6 +13,7 @@ from pymatgen.io.vasp.inputs import Poscar
 from materials-workflows.magnetism.analyzer import MagneticStructureEnumerator
 from shutil import copyfile, move
 from materials-workflows.vasp_functions import *
+from materials-workflows.convergence_inputs import bulk_relax
 
 def gen_input():
   pwd = os.getcwd()
