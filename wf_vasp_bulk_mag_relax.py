@@ -32,7 +32,8 @@ def gen_input():
                           break
                       linecount+=1
               k.close()
-              convergence_writelines = bulk_convergence(str(kpts_line))      
+              convergence_writelines = bulk_convergence(str(kpts_line))
+              write_vasp_convergence_file(root,convergence_writelines)
   
 def check_converged():
   pwd = os.getcwd()
@@ -47,8 +48,3 @@ def check_converged():
   else:
     write_workflow_convergence_file(pwd, False)
   
-
-for root, dirs, files in os.walk(pwd):
-    for file in files:
-        if file == 'POTCAR':
-            copyfile('CONVERGENCE',os.path.join(pwd,'CONVERGENCE'))
