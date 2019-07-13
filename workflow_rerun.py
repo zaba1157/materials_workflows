@@ -270,8 +270,9 @@ def workflow_progress(pwd):
                     pairs = (line.split(None) for line in fd)
                     workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
                     workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
-                    workflow_run_directory_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
-                    workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+                    workflow_rerun_command_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
+                    workflow_run_directory_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+                     
                     fd.close()
                     
                 if os.path.exists(os.path.join(root,'WORKFLOW_STAGE')):
