@@ -24,6 +24,7 @@ def gen_input():
   os.mkdir(workflow_path)
   structure = Poscar.from_file(os.path.join(pwd,'POSCAR')).structure
   move(os.path.join(pwd,'POSCAR'),os.path.join(pwd,'POSCAR.orig'))
+  write_workflow_convergence_file(pwd, False)
   mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
                     output_dir=workflow_path)
@@ -37,7 +38,7 @@ def gen_input():
   
 def check_converged():
   pwd = os.getcwd()
-  if workflow_converged(pwd) == True:
+  if workflow_is_converged(pwd) == True:
     write_workflow_convergence_file(pwd, True)
     job_path = get_minimum_energy_job(pwd)
     stage_number = get_workflow_stage_number(pwd)
