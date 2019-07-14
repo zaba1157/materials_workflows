@@ -14,7 +14,7 @@ from pymatgen.io.vasp.inputs import Poscar
 from materials_workflows.magnetism.analyzer import MagneticStructureEnumerator
 from shutil import  move
 from materials_workflows.vasp_functions import *
-from materials_workflows.convergence_inputs import bulk_convergence
+from materials_workflows.vasp_convergence.convergence_inputs import bulk_convergence
 
 
 def gen_input():
