@@ -25,7 +25,7 @@ def readfile(filename):
 
 def read_poscar(path):
     #get elements lists from POSCAR
-    pos_tempfile = readfile(path + 'POSCAR')
+    pos_tempfile = readfile(path)
     pos_tempfile_read = [x.split() for x in pos_tempfile]
 
     #get lattice
