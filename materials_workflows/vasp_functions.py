@@ -229,15 +229,18 @@ def workflow_is_converged(pwd):
                             job = is_converged(root)
                             if job == 'converged':
                                 workflow_converged_list.append(True)
+                    else:
+                        workflow_converged_list.append(False)
+                        
     if False not in workflow_converged_list:
         return True
     else:
         return Fasle
     
 def write_workflow_convergence_file(pwd, value):
-    convergence_file = os.path.join(pwd,'WORKFLOW_CONVERGENCE')
+    convergence_file = os.path.join(pwd,'TASK_CONVERGENCE')
     with open(convergence_file, 'w') as f:
-        f.write('WORKFLOW_CONVERGED = '+str(value))
+        f.write('TASK_CONVERGED = '+str(value))
         f.close()
 def write_vasp_convergence_file(path, writelines):
     with open(os.path.join(path,'CONVERGENCE'),'w') as f:
