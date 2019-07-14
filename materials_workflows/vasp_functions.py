@@ -235,7 +235,7 @@ def workflow_is_converged(pwd):
     if False not in workflow_converged_list:
         return True
     else:
-        return Fasle
+        return False
     
 def write_workflow_convergence_file(pwd, value):
     convergence_file = os.path.join(pwd,'TASK_CONVERGENCE')
