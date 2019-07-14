@@ -250,7 +250,7 @@ def get_minimum_energy_job(pwd):
     min_energy = 1000
     for root, dirs, files in os.walk(pwd):
             for file in files:
-                if file == 'POTCAR' and if check_vasp_input(root) == True:                  
+                if file == 'POTCAR' and check_vasp_input(root) == True:                  
                     Vr = Vasprun(os.path.join(root, 'vasprun.xml'))
                     if Vr.final_energy < min_energy:
                         min_energy = Vr.final_energy
