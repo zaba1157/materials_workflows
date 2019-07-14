@@ -19,11 +19,15 @@ from materials_workflows.vasp_convergence.convergence_inputs import bulk_converg
 
 def gen_input():
   pwd = os.getcwd()
+  workflow_name = 'bulk_mag'
+  workflow_path = os.path.join(pwd,workflow_name)
+  os.mkdir(workflow_path)
   structure = Poscar.from_file(os.path.join(pwd,'POSCAR'))
+  move(os.path.join(pwd,'POSCAR'),os.path.join(pwd,'POSCAR.orig'))
   mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
-                    output_dir=os.path.join(pwd,'vasp_bulk_mag_relax'))
-  for root, dirs, files in os.walk(os.path.join(pwd,'vasp_bulk_mag_relax')):
+                    output_dir=workflow_path)
+  for root, dirs, files in os.walk(workflow_path):
       for file in files:
         if file == POSCAR:
           kpoints1 = get_kpoints(os.path.join(root,'POSCAR'), 500)
