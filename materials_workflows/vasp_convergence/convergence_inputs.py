@@ -26,7 +26,7 @@ def surf_convergence(inital_kpoints, final_kpoints):
 
 def bulk_convergence(inital_kpoints, final_kpoints):
   
-    step0 = ['\n0 Very_Rough_Converge\n',
+    step0 = ['\n0 Very_Rough_Converge\n', 'NPAR = 1',
            'PREC = Normal','ENCUT = 520','NSW = 5000',
            'EDIFFG = -0.1','EDIFF = 1e-3','NELMIN = 10',
            'NELM = 80','ALGO = Fast','LORBIT = 11','SIGMA = 0.05',
