@@ -22,14 +22,14 @@ def gen_input():
   workflow_name = 'bulk_mag'
   workflow_path = os.path.join(pwd,workflow_name)
   os.mkdir(workflow_path)
-  structure = Poscar.from_file(os.path.join(pwd,'POSCAR'))
+  structure = Poscar.from_file(os.path.join(pwd,'POSCAR')).structure
   move(os.path.join(pwd,'POSCAR'),os.path.join(pwd,'POSCAR.orig'))
   mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
                     output_dir=workflow_path)
   for root, dirs, files in os.walk(workflow_path):
       for file in files:
-        if file == POSCAR:
+        if file == 'POSCAR':
           kpoints1 = get_kpoints(os.path.join(root,'POSCAR'), 500)
           kpoints2 = get_kpoints(os.path.join(root,'POSCAR'), 1000)
           convergence_writelines = bulk_convergence(kpoints1,kpoints2)
