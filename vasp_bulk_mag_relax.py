@@ -24,7 +24,7 @@ def gen_input():
   os.mkdir(workflow_path)
   structure = Poscar.from_file(os.path.join(pwd,'POSCAR')).structure
   move(os.path.join(pwd,'POSCAR'),os.path.join(pwd,'POSCAR.orig'))
-  write_workflow_convergence_file(pwd, False)
+  write_workflow_convergence_file(workflow_path, False)
   mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
                     output_dir=workflow_path)
