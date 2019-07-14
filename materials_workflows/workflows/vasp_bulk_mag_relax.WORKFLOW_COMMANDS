@@ -1,3 +1,3 @@
 Step    Generate Inputs Command       Check Convergence Command      Rerun Command      Workflow Name
 
-0      'vasp_bulk_mag_relax.py -i'    'vasp_bulk_mag_relax.py -c'      'vasp_run'           'blk_mag'
+0      'vasp_bulk_mag_relax.py -i'    'vasp_bulk_mag_relax.py -c'      'vasp_run'           'bulk_mag'
