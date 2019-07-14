@@ -217,7 +217,7 @@ def workflow_is_converged(pwd):
     workflow_converged_list = []
     for root, dirs, files in os.walk(pwd):
             for file in files:
-                if file == 'POTCAR' and if check_vasp_input(root) == True:                  
+                if file == 'POTCAR' and check_vasp_input(root) == True:                  
                     if os.path.exists(os.path.join(root,'vasprun.xml')):
                         try: 
                             Vr = Vasprun(os.path.join(root, 'vasprun.xml'))
