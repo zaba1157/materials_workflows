@@ -4,8 +4,8 @@ Currently only works on Summit and Eagle (SLURM), assuming you already have all 
 #TODO dependencies
 
 1) Download package with: git clone https://github.com/zaba1157/materials_workflows.git
-2) Append <Install Directory>/materials_workflows to both $PATH and $PYTHONPATH.
-3) Run: python <Install Directory>/materials_workflows/setup.py
+2) Append Install-Directory/materials_workflows to both $PATH and $PYTHONPATH.
+3) Run: python Install-Directory/materials_workflows/setup.py
 
 # running workflows
 
