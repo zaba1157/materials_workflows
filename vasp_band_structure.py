@@ -41,9 +41,9 @@ def generate_input_files():
     files.poscar.write_file(workflow_path + '/POSCAR')
     files.potcar.write_file(workflow_path + '/POTCAR')
     
-    write_workflow_convergence_file(pwd, False) 
+    write_workflow_convergence_file(pwd, False) # TASK_CONVERGENCE
     convergence_writelines = band_structure_calculation() 
-    write_vasp_convergence_file(workflow_path, convergence_writelines) 
+    write_vasp_convergence_file(workflow_path, convergence_writelines) # CONVERGENCE
     
     return
 
