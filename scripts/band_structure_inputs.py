@@ -20,7 +20,7 @@ from pymatgen.io.vasp.inputs import Incar
 
 from pymatgen.core.structure import Structure
 from pymatgen.symmetry.bandstructure import HighSymmKpath
-from vasp_workflow.materials_workflows.vasp_convergence.convergence_inputs import band_structure_calculation
+from materials_workflows.vasp_convergence.convergence_inputs import band_structure_calculation
 
 class BandStructureFiles():
     
