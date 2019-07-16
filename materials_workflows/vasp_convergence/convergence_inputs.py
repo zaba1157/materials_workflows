@@ -41,3 +41,11 @@ def bulk_convergence(inital_kpoints, final_kpoints):
     step3 = ['\n3 One_Step\n','LAECHG = .TRUE.','NSW = 0','NELM = 500']
     
     return step0 + step1 + step2 + step3
+
+def band_structure_calculation():
+    
+    step0 = ['\n0 Band_Structure_Calculation\n', 'EDIFF = 0.0001',
+           'ENCUT = 520','IBRION = 2', 'ICHARG = 11','ISIF = 3','ISMEAR = 0',
+           'LWAVE = True','NELM = 1000','NSW = 0','PREC = Accurate', 'SIGMA = 0.05']
+    
+    return step0
