@@ -32,8 +32,10 @@ def generate_input_files():
     if os.path.isdir(workflow_path) == False: 
         os.mkdir(workflow_path) 
     
-    copy('vasprun.xml', workflow_path) 
-    files = BandStructureFiles()
+    files_path = pwd + '/bulk_mag' + '/0_final'  
+    copy(files_path + '/vasprun.xml', workflow_path) 
+    
+    files = BandStructureFiles(files_path)
     files.kpoints.write_file(workflow_path + '/KPOINTS') 
     files.new_incar.write_file(workflow_path + '/INCAR')
     files.poscar.write_file(workflow_path + '/POSCAR')
