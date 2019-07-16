@@ -3,7 +3,7 @@
 Created on Tue Jul 16 13:00:54 2019
 
 ''' Script to generate and monitor the progress of a band structure calculation '''
-''' This script necessitates that INCAR, POTCAR, CONTCAR and vasprun.xml files are in the present working directory '''
+''' This script necessitates that INCAR, POTCAR, CONTCAR and vasprun.xml files are in the directory specified by files_path '''
 ''' This means that a previous VASP relaxation run is required before the band structure can be calculated '''
 ''' Path-dependent KPOINTS file is generated from the read-in CONTCAR file '''
 ''' KPOINTS parameters can be adjusted in the band_structure_inputs script, INCAR parameters in the convergence_inputs script '''
@@ -23,8 +23,8 @@ from materials_workflows.vasp_functions import workflow_is_converged
 def generate_input_files():
     
     ''' Generates 'band_structure' folder in the present working directory if 'band_structure' folder doesn't exist '''
-    ''' Copies 'vasprun.xml' file from present working directory to 'band_structure'; writes input files from BandStructureFiles() '''
-    ''' Writes "TASK_CONVERGENCE" to pwd and "CONVERGENCE" file to 'band_structure' '''
+    ''' Copies 'vasprun.xml' file from the files_path directory to 'band_structure'; writes input files from BandStructureFiles() '''
+    ''' Writes "TASK_CONVERGENCE" to pwd and "CONVERGENCE" file to 'band_structure' directory inside pwd '''
     
     pwd = os.getcwd() 
     workflow_name = 'band_structure'
