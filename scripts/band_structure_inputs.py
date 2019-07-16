@@ -3,9 +3,9 @@
 Created on Fri Jul 12 14:43:58 2019
 
 ''' Script to generate POSCAR and KPOINTS files for density of states and band structure calculations following bulk relaxation '''
-''' Requires INCAR, POTCAR and CONTCAR files in the same working directory as band_structure.py '''
-''' Reads INCAR, POTCAR from current working directory '''
-''' Copies the CONTCAR file as the POSCAR file from current working directory '''
+''' Requires INCAR, POTCAR and CONTCAR files in the files_path directory '''
+''' Reads INCAR, POTCAR from the files_path directory '''
+''' Copies the CONTCAR file as the POSCAR file from the files_path directory '''
 ''' Generates a KPOINTS files specifying symmetry paths to sample using the primitive cell structure of CONTCAR '''
 
 @author: rymo1354
@@ -24,9 +24,9 @@ from materials_workflows.vasp_convergence.convergence_inputs import band_structu
 
 class BandStructureFiles():
     
-    def __init__(self):
+    def __init__(self, files_path):
         
-        self.cwd = os.getcwd()
+        self.path = files_path
         self.tags = self.Incar_tags()
         
         self.potcar = self.get_Potcar()
@@ -41,7 +41,7 @@ class BandStructureFiles():
         ''' Reads the file titled POTCAR from the present working directory '''
         ''' Generates and returns pymatgen.io.vasp.inputs.PotcarSingle object from POTCAR '''
         
-        potcar = PotcarSingle.from_file(self.cwd + '\POTCAR')
+        potcar = PotcarSingle.from_file(self.path + '\POTCAR')
         
         return potcar
     
@@ -50,7 +50,7 @@ class BandStructureFiles():
         ''' Reads the file titled CONTCAR from the present working directory '''
         ''' Generates and returns pymatgen.io.vasp.inputs.Poscar object from CONTCAR '''
         
-        poscar = Poscar.from_file(self.cwd + '\CONTCAR')
+        poscar = Poscar.from_file(self.path + '\CONTCAR')
         
         return poscar
     
@@ -76,8 +76,8 @@ class BandStructureFiles():
         ''' Updates the old_incar object to the new_incar object using self.tags '''
         ''' Returns both the old_incar and new_incar objects (pymatgen.io.vasp.inputs.Incar) '''
         
-        old_incar = Incar.from_file(self.cwd + '\INCAR')
-        new_incar = Incar.from_file(self.cwd + '\INCAR')
+        old_incar = Incar.from_file(self.path + '\INCAR')
+        new_incar = Incar.from_file(self.path + '\INCAR')
         new_incar.update(self.tags)
         
         return old_incar, new_incar
@@ -89,7 +89,7 @@ class BandStructureFiles():
         ''' Returns the pymatgen.io.vasp.inputs.Kpoints object, with symmetric k points specified '''
         ''' NOTE: divisions is the number of points sampled along each path between k points, default = 10'''
         
-        primitive_structure = Structure.from_file(self.cwd + '\CONTCAR', primitive=True)
+        primitive_structure = Structure.from_file(self.path + '\CONTCAR', primitive=True)
         k_path = HighSymmKpath(primitive_structure)
         kpoints = Kpoints.automatic_linemode(divisions, k_path)
         
