@@ -255,8 +255,10 @@ def get_minimum_energy_job(pwd):
             for file in files:
                 if file == 'POTCAR' and check_vasp_input(root) == True:                  
                     Vr = Vasprun(os.path.join(root, 'vasprun.xml'))
-                    if Vr.final_energy < min_energy:
-                        min_energy = Vr.final_energy
+                    nsites = len(Vr.final_structure)
+                    E_per_atom = Vr.final_energy/nsites
+                    if E_per_atom < min_energy:
+                        min_energy = E_per_atom
                         job_path = root
     return root                    
     
