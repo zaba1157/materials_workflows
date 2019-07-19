@@ -28,17 +28,17 @@ def bulk_convergence(inital_kpoints, final_kpoints):
   
     step0 = ['\n0 Very_Rough_Converge\n', 'NPAR = 1',
            'PREC = Normal','ENCUT = 520','NSW = 5000',
-           'EDIFFG = -0.1','EDIFF = 1e-3','NELMIN = 10',
-           'NELM = 80','ALGO = Fast','LORBIT = 11','SIGMA = 0.05',
+           'EDIFFG = 0.1','EDIFF = 1e-3','NELMIN = 10',
+           'NELM = 80','ALGO = Fast','LAECHG = .FALSE.','SIGMA = 0.05',
            'IBRION = 2','ISIF = 3','ISTART = 0','ICHARG = 2',
            'ISMEAR = 0','ISYM = 0','\nKPOINTS '+str(inital_kpoints)]
     step1 = ['\n1 Rough_Converge\n',
-             'EDIFF = 1e-5','EDIFFG = -1E-2','NELMIN = 4',
+             'EDIFF = 1e-5','EDIFFG = 1E-2','NELMIN = 4',
              'NELM = 60','ISMEAR = -5','\nKPOINTS '+str(final_kpoints)]
     step2 = ['\n2 Full_Converge\n',
-             'EDIFF = 1e-6','ISTART = 1','ICHARG = 1','EDIFFG = -1E-4',
+             'EDIFF = 1e-6','ISTART = 1','ICHARG = 1','EDIFFG = 1E-4',
              'PREC = Accurate','NELM = 100']
-    step3 = ['\n3 One_Step\n','LAECHG = .TRUE.','NSW = 0','NELM = 500']
+    step3 = ['\n3 One_Step\n','LAECHG = .TRUE.','NSW = 0','NELM = 500','LORBIT = 11']
     
     return step0 + step1 + step2 + step3
 
