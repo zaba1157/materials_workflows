@@ -350,7 +350,7 @@ if __name__ == '__main__':
         submit = 'sbatch'
     elif computer=='summit':
         queue_type = 'slurm'
-        submit = 'sbatch --export=NONE'
+        submit = 'sbatch --export=NONE '
     else:
         queue_type = 'pbs'
         submit = 'qsub'
