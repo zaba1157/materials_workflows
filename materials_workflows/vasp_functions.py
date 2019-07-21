@@ -263,7 +263,7 @@ def get_minimum_energy_job(pwd):
     return root                    
     
 def get_workflow_stage_number(pwd):
-    workflow_stage = Incar().from_file(os.path.join(root,'WORKFLOW_STAGE'))
+    workflow_stage = Incar().from_file(os.path.join(pwd,'WORKFLOW_STAGE'))
     current_workflow_stage_number = workflow_stage['WORKFLOW_STAGE_NUMBER']
     
     return current_workflow_stage_number
