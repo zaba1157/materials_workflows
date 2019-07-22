@@ -168,7 +168,7 @@ def is_converged(path):
     rerun = False
     if 'STAGE_NUMBER' in open(os.path.join(path,'INCAR')).read():
         if os.path.exists(os.path.join(path,'CONVERGENCE')):
-            with open('CONVERGENCE') as fd:
+            with open(os.path.join(path,'CONVERGENCE')) as fd:
                 pairs = (line.split(None) for line in fd)
                 res   = {int(pair[0]):pair[1] for pair in pairs if len(pair) == 2 and pair[0].isdigit()}
                 max_stage_number = len(res)-1
