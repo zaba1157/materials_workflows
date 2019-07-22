@@ -276,10 +276,10 @@ def vasp_run_main(pwd):
     
     return computed_entries                    
 
-def workflow_progress(pwd):
+def workflow_progress(top_dir):
     other_calculators_in_workflow = False
     workflow_commands_in_workflow = False
-    for root, dirs, files in os.walk(pwd):
+    for root, dirs, files in os.walk(top_dir):
         for file in files:
             if file == 'WORKFLOW_COMMANDS':
                 workflow_commands_in_workflow = True
