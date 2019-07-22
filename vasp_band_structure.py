@@ -16,7 +16,7 @@ import os
 import argparse
 from shutil import copy, move
 
-from materials_workflows.scripts.band_structure_inputs import BandStructureFiles
+from scripts.band_structure_inputs import BandStructureFiles
 from materials_workflows.vasp_convergence.convergence_inputs import band_structure_calculation
 from materials_workflows.vasp_functions import write_workflow_convergence_file, write_vasp_convergence_file
 from materials_workflows.vasp_functions import workflow_is_converged
