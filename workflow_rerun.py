@@ -386,7 +386,7 @@ def workflow_progress(top_dir):
                                 default_workflow_nameing(workflow_path, task_name)
                                             
                                             
-                return other_calculators_in_workflow, workflow_commands_in_workflow
+    return other_calculators_in_workflow, workflow_commands_in_workflow
 
 def driver():
     pwd = os.getcwd()
