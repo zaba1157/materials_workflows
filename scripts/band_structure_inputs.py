@@ -41,7 +41,7 @@ class BandStructureFiles():
         ''' Reads the file titled POTCAR from the present working directory '''
         ''' Generates and returns pymatgen.io.vasp.inputs.PotcarSingle object from POTCAR '''
         
-        potcar = PotcarSingle.from_file(self.path + '\POTCAR')
+        potcar = PotcarSingle.from_file(self.path + '/POTCAR')
         
         return potcar
     
@@ -50,7 +50,7 @@ class BandStructureFiles():
         ''' Reads the file titled CONTCAR from the present working directory '''
         ''' Generates and returns pymatgen.io.vasp.inputs.Poscar object from CONTCAR '''
         
-        poscar = Poscar.from_file(self.path + '\CONTCAR')
+        poscar = Poscar.from_file(self.path + '/CONTCAR')
         
         return poscar
     
@@ -76,8 +76,8 @@ class BandStructureFiles():
         ''' Updates the old_incar object to the new_incar object using self.tags '''
         ''' Returns both the old_incar and new_incar objects (pymatgen.io.vasp.inputs.Incar) '''
         
-        old_incar = Incar.from_file(self.path + '\INCAR')
-        new_incar = Incar.from_file(self.path + '\INCAR')
+        old_incar = Incar.from_file(self.path + '/INCAR')
+        new_incar = Incar.from_file(self.path + '/INCAR')
         new_incar.update(self.tags)
         
         return old_incar, new_incar
@@ -89,7 +89,7 @@ class BandStructureFiles():
         ''' Returns the pymatgen.io.vasp.inputs.Kpoints object, with symmetric k points specified '''
         ''' NOTE: divisions is the number of points sampled along each path between k points, default = 10'''
         
-        primitive_structure = Structure.from_file(self.path + '\CONTCAR', primitive=True)
+        primitive_structure = Structure.from_file(self.path + '/CONTCAR', primitive=True)
         k_path = HighSymmKpath(primitive_structure)
         kpoints = Kpoints.automatic_linemode(divisions, k_path)
         
