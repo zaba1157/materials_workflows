@@ -325,6 +325,7 @@ def workflow_progress(pwd):
                                             rerun_command = task_rerun_command        
 
                                 else:
+                                    os.chdir(workflow_path)
                                     os.system(task_convergence_command)
                                     if task_convergence['TASK_CONVERGED'] == True:
                                             upgrade_workflow_list.append(True) 
@@ -333,6 +334,7 @@ def workflow_progress(pwd):
                                         rerun_command = task_rerun_command
                                         
                             if rerun_command != None:
+                                os.chdir(workflow_path)
                                 if str(rerun_command) != 'vasp_run':                                    
                                     os.system(rerun_command)
                                     other_calculators_in_workflow = True 
@@ -349,7 +351,8 @@ def workflow_progress(pwd):
                                     task_rerun_command = workflow_rerun_commands_dict[task_name]
                                    # workflow_stage_name = str(workflow_run_directory_dict[workflow_command])
                                     if task_stage_number == int(current_workflow_stage_number):
-                                        #workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command]))    
+                                        #workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command])) 
+                                        os.chdir(root)
                                         os.system(task_input_command)
                                         os.chdir(workflow_path)
                                         if str(task_rerun_command) != 'vasp_run':                                 
@@ -371,7 +374,8 @@ def workflow_progress(pwd):
                         task_input_command = workflow_input_commands_dict[task_name]
                         task_convergence_command = workflow_convergence_commands_dict[task_name]
                         task_rerun_command = workflow_rerun_commands_dict[task_name]
-                        if task_stage_number == int(current_workflow_stage_number):    
+                        if task_stage_number == int(current_workflow_stage_number):
+                            os.chdir(root)
                             os.system(task_input_command)
                             os.chdir(workflow_path)
                             #print(str(task_rerun_command))
