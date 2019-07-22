@@ -203,10 +203,8 @@ def default_workflow_nameing(pwd, workflow_stage_name):
                     struct = Poscar.from_file(os.path.join(rt,'POSCAR')).structure
                     formula = struct.composition.reduced_formula
                     directories = rt.split(os.sep)
-                    if workflow_stage_name != directories[-2]: 
-                        if workflow_stage_name != directories[-1]:
-                            name =  str(formula+'-'+directories[-1]+'-'+directories[-2]+'-'+workflow_stage_name)
-                        
+                    if workflow_stage_name != directories[-2] and workflow_stage_name != directories[-1]: 
+                        name =  str(formula+'-'+directories[-1]+'-'+directories[-2]+'-'+workflow_stage_name)                      
                     elif workflow_stage_name == directories[-2]:                 
                         name =  str(formula+'-'+directories[-1]+'-'+workflow_stage_name)
                     elif workflow_stage_name == directories[-1]:
