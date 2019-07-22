@@ -18,7 +18,8 @@ def generate_input_files():
         os.mkdir(workflow_path)
 
     files_path = pwd + '/bulk_mag' + '/0_final'  # this directory path is specific to the magnetic_sampling->band_structure wor$
-    copy(files_path + '/vasprun.xml', workflow_path)
+    copy(files_path + '/WAVECAR', workflow_path)
+    copy(files_path + '/CHGCAR', workflow_path)
 
     files = BandStructureFiles(files_path)
     files.kpoints.write_file(workflow_path + '/KPOINTS')
