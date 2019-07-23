@@ -38,13 +38,11 @@ def check_converged():
     ''' Checks for convergence; rewrites to 'TASK_CONVERGED = True' in 'TASK_CONVERGENCE' file if true '''
 
     pwd = os.getcwd()
-    workflow_name = 'band_structure'
-    workflow_path = os.path.join(pwd, workflow_name)
 
-    if workflow_is_converged(workflow_path) == True:
-        write_workflow_convergence_file(workflow_path, True)
+    if workflow_is_converged(pwd) == True:
+        write_workflow_convergence_file(pwd, True)
     else:
-        write_workflow_convergence_file(workflow_path, False)
+        write_workflow_convergence_file(pwd, False)
 
     return
 
