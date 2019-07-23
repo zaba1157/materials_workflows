@@ -347,13 +347,13 @@ if __name__ == '__main__':
 
     if computer == 'janus' or computer == 'rapunzel'  or computer=='eagle':
         queue_type = 'slurm'
-        submit = 'sbatch'
+        submit = 'sbatch '
     elif computer=='summit':
         queue_type = 'slurm'
         submit = 'sbatch --export=NONE '
     else:
         queue_type = 'pbs'
-        submit = 'qsub'
+        submit = 'qsub '
 
     if args.queue:
         queue = args.queue
