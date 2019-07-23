@@ -331,11 +331,11 @@ def workflow_progress(top_dir):
                                         upgrade_workflow_list.append(False)                                        
                                         rerun_command = task_rerun_command
                                         
-                            if rerun_command != None:
-                                os.chdir(workflow_path)
-                                if str(rerun_command) != 'vasp_run':                                    
-                                    os.system(rerun_command)
-                                    other_calculators_in_workflow = True 
+                                if rerun_command != None:
+                                    os.chdir(workflow_path)
+                                    if str(rerun_command) != 'vasp_run':                                    
+                                        os.system(rerun_command)
+                                        other_calculators_in_workflow = True 
                                     
                         if False not in upgrade_workflow_list:
                             if current_workflow_stage_number < max_workflow_stage_number:                                
