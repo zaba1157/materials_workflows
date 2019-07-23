@@ -30,7 +30,7 @@ def get_Structures(id_list):
 
     return structures
 
-def generate_o_vacancies(id_list):
+def generate_input_files(id_list):
 
     pwd = os.getcwd()
     workflow_name = 'o_vacancies'
@@ -44,17 +44,18 @@ def generate_o_vacancies(id_list):
     for structure in structures:
 
         structure.make_supercell([2, 2, 2])
-        o_indices = list(structure.indices_from_symbol('O'))
-        random_O_index = random.choice(o_indices)
+        O_indices = list(structure.indices_from_symbol('O'))
+        random_O_index = random.choice(O_indices)
         structure.remove_sites([random_O_index])
-
-        #composition = str(structure.formula)
-        #composition_directory_name = composition.replace(' ', '_')
-        #composition_path = os.path.join(workflow_path, composition_directory_name)
-
         batch_write_input([structure], vasp_input_set=MPRelaxSet, output_dir=workflow_path,
                       make_dir_if_not_present=True)
+        
+    for root, dirs, files in os.walk(workflow_path):
+        for file in files:
+            if file == 'POSCAR':
+                #convergence_writelines = bulk_convergence(kpoints1,kpoints2)
+                write_vasp_convergence_file(root, convergence_writelines)
 
     return
-
-generate_o_vacancies(material_ids)
+  
+# Currently unfinished
