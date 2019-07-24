@@ -8,6 +8,7 @@ Created on Tue Jul 23 14:55:20 2019
 """
 
 import os
+import argparse
 import random
 from materials_workflows.vasp_functions import write_workflow_convergence_file
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
@@ -94,7 +95,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     if args.gen_inputs:
-        generate_input_files()
+        generate_input_files(material_ids)
     elif args.converged:
         check_converged()
     else:
