@@ -10,7 +10,7 @@ Created on Tue Jul 23 14:55:20 2019
 import os
 import argparse
 import random
-from materials_workflows.vasp_functions import write_workflow_convergence_file
+from materials_workflows.vasp_functions import write_workflow_convergence_file, workflow_is_converged
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 from pymatgen.ext.matproj import MPRester
 
