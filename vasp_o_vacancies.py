@@ -59,11 +59,12 @@ def generate_input_files(id_list):
     for directory in dirs:
         for file in os.listdir(directory):
             if file == 'INCAR':
-                
-                f = open(directory + '/INCAR', "r")
+
+                f = open(directory + '/INCAR', "r+")
+                f.write('NPAR = 2\n')
                 lines = f.readlines()
                 with open(directory + '/CONVERGENCE', 'a') as c:
-                    c.write('0 MP_Convergence\n\n')
+                    c.write('0 MP_Converge\n\n')
                     for line in lines:
                         c.write(line)
                 f.close()
