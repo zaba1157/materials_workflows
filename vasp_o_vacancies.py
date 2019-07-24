@@ -49,7 +49,7 @@ def generate_input_files(id_list):
     for structure in structures:
 
         structure.make_supercell([2, 2, 2])
-        O_indices = list(structure.indices_from_symbol('O'))
+        O_indices = list(structure.indices_from_symbol('O')) # removes oxygen from structure; this will fail if no O in structure
         random_O_index = random.choice(O_indices)
         structure.remove_sites([random_O_index])
 
@@ -73,7 +73,8 @@ def generate_input_files(id_list):
                 f.close()
 
     write_workflow_convergence_file(workflow_path, False) # writes the TASK_CONVERGENCE file to 'o_vacancies'
-
+    # NOTE: Create the TASK_CONVERGENCE file after all subdirectories have been created. Otherwise, it will be erroneously
+    # included in the list of dirs
     return
   
 def check_converged():
