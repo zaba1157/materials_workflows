@@ -9,7 +9,7 @@ import os
 import json
 from pymatgen.io.vasp.outputs import Vasprun
 from tempfile import mkstemp
-from shutil import move
+from shutil import move,copy
 from os import remove
 import subprocess
 from pymatgen.io.vasp.inputs import Poscar, Incar
