@@ -56,13 +56,13 @@ def generate_input_files(id_list):
     dirs = [x[0] for x in os.walk(workflow_path)]
     dirs.remove(workflow_path)
 
-    for dir in dirs:
-        for file in os.listdir(dir):
+    for directory in dirs:
+        for file in os.listdir(directory):
             if file == 'INCAR':
                 
-                f = open(dir + '/INCAR', "r")
+                f = open(directory + '/INCAR', "r")
                 lines = f.readlines()
-                with open(dir + '/CONVERGENCE', 'a') as c:
+                with open(directory + '/CONVERGENCE', 'a') as c:
                     c.write('0 MP_Converge\n\n')
                     for line in lines:
                         c.write(line)
