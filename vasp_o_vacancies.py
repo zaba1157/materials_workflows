@@ -9,6 +9,7 @@ Created on Tue Jul 23 14:55:20 2019
 
 import os
 import random
+from materials_workflows.vasp_functions import write_workflow_convergence_file
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 from pymatgen.ext.matproj import MPRester
 
@@ -47,15 +48,54 @@ def generate_input_files(id_list):
         O_indices = list(structure.indices_from_symbol('O'))
         random_O_index = random.choice(O_indices)
         structure.remove_sites([random_O_index])
+
         batch_write_input([structure], vasp_input_set=MPRelaxSet, output_dir=workflow_path,
                       make_dir_if_not_present=True)
-        
-    for root, dirs, files in os.walk(workflow_path):
-        for file in files:
-            if file == 'POSCAR':
-                #convergence_writelines = bulk_convergence(kpoints1,kpoints2)
-                write_vasp_convergence_file(root, convergence_writelines)
+
+    dirs = [x[0] for x in os.walk(workflow_path)]
+    dirs.remove(workflow_path)
+
+    for dir in dirs:
+        for file in os.listdir(dir):
+            if file == 'INCAR':
+                
+                f = open(dir + '/INCAR', "r")
+                lines = f.readlines()
+                with open(dir + '/CONVERGENCE', 'a') as c:
+                    c.write('0 MP_Converge\n\n')
+                    for line in lines:
+                        c.write(line)
+                f.close()
+
+    write_workflow_convergence_file(workflow_path, False)
 
     return
   
-# Currently unfinished
+def check_converged():
+      
+    pwd = os.getcwd()
+    if workflow_is_converged(pwd) == True:
+        write_workflow_convergence_file(pwd, True)
+    else:
+        write_workflow_convergence_file(pwd, False)
+    
+def rerun_task():
+    #only needed for non-VASP calculations
+    pass
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--gen_inputs', help='Generates inputs for workflow.',
+                        action='store_true')
+    parser.add_argument('-c', '--converged', help='Checks for convergence of workflow.',
+                        action='store_true')
+    parser.add_argument('-r', '--rerun', help='Reruns worklow. This does nothing if vasp workflow.',
+                        action='store_true')
+    args = parser.parse_args()
+    
+    if args.gen_inputs:
+        generate_input_files()
+    elif args.converged:
+        check_converged()
+    else:
+        rerun_task()
