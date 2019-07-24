@@ -478,3 +478,112 @@ def driver():
     else:        
         with open(os.path.join(pwd,str(workflow_name) +'_converged.json'),'w') as f:
             json.dump(computed_entries, f)  
+            
+            
+from pymatgen.analysis.eos import EOS
+
+def get_number_of_subs(path):
+    backup_path = os.path.join(path,'backup')
+    max_num_sub = 0
+    for root, dirs, files in os.walk(job_path):
+        for di in dirs:
+            if di.isdigit():
+                if int(di) > max_num_sub:
+                    max_num_sub = int(di)
+    return max_num_sub
+
+def remove_sys_incar(path):
+    filepath = os.path.join(path,'INCAR')
+    with open(filepath,'r') as f:
+        data = f.readlines()
+    for line in range(len(data)):
+        if data[line].split()[0] == 'SYSTEM':
+            data[line] = '\n'
+    with open(filepath,'w') as f:
+        f.writelines( data )
+        
+def volume_workflow_is_converged(pwd,max_num_sub,min_num_vols):
+    workflow_converged_list = []
+    E,V = [],[]
+    minE = 100
+    for root, dirs, files in os.walk(pwd):
+            for file in files:
+                if file == 'POTCAR' and check_vasp_input(root) == True:                  
+                    if os.path.exists(os.path.join(root,'vasprun.xml')):
+                        try: 
+                            Vr = Vasprun(os.path.join(root, 'vasprun.xml'))
+                            fizzled = False                                
+                        except:
+                            fizzled = True
+                            workflow_converged_list.append(False)
+                            
+                        if fizzled == False:    
+                            job = is_converged(root)
+                            if job == 'converged':
+                                workflow_converged_list.append(True)
+                                vol = Poscar.from_file(os.path.join(root,'POSCAR')).structure.volume
+                                if Vr.final_energy < minE:
+                                    minE = Vr.final_energy
+                                    minV = vol
+                                    minE_path = root
+                                    minE_formula = str(Poscar.from_file(os.path.join(path,'POSCAR')).structure.composition.reduced_formula)
+                                E.append(Vr.final_energy)
+                                V.append(vol)
+                                
+                        elif fizzled == True and get_incar_value(path, 'STAGE_NUMBER') == 0: #job is failing on initial relaxation
+                            num_sub = get_number_of_subs(root)
+                            if num_sub == max_num_sub:
+                                os.remove(os.path.join(root,'POTCAR'))
+                                #job failed too many times.... just ignore this job for the remainder of the workflow
+                    else:
+                        workflow_converged_list.append(False)
+
+    num_jobs = check_num_jobs_in_workflow(pwd)
+    if num_jobs < min_num_vols and len(E) > 0:
+        scale_around_min = [0.98,1.02]   
+        for s in scale_around_min:
+            write_path = os.path.join(pwd,minE_formula+str(s*minV))
+            os.mkdir(write_path)
+            structure = Poscar.from_file(os.path.join(minE_path,'POSCAR')).structure
+            structure.scale_lattice(s*minV)
+            Poscar.write_file(structure,os.path.join(write_path,'POSCAR'))
+            files_copy = ['backup/Init/INCAR','CONVERGENCE','KPOINTS','POTCAR']
+            for fc in files_copy:
+                copy_from_path = os.path.join(minE_path,fc)
+                if os.path.exists(copy_from_path):
+                    copy(copy_from_path,write_path)
+            remove_sys_incar(write_path)
+                    
+        
+        #create new jobs
+    if False not in workflow_converged_list:
+        if len(E) > min_num_vols-1:
+            volumes = V
+            energies = E
+            eos = EOS(eos_name='murnaghan')
+            eos_fit = eos.fit(volumes, energies)
+            eos_minV = eos_fit.v0
+            if abs(eos_minV - minV) < 1: #1 ang cutoff
+                return True
+                #eos_fit.plot()
+                
+            else:
+                scale_around_min = [0.99,1,1.01]   
+                for s in scale_around_min:
+                    write_path = os.path.join(pwd,minE_formula+str(s*eos_minV))
+                    os.mkdir(write_path)
+                    structure = Poscar.from_file(os.path.join(minE_path,'POSCAR')).structure
+                    structure.scale_lattice(s*eos_minV)
+                    Poscar.write_file(structure,os.path.join(write_path,'POSCAR'))
+                    files_copy = ['backup/Init/INCAR','CONVERGENCE','KPOINTS','POTCAR']
+                    for fc in files_copy:
+                        copy_from_path = os.path.join(minE_path,fc)
+                        if os.path.exists(copy_from_path):
+                            copy(copy_from_path,write_path)
+                    remove_sys_incar(write_path)
+                
+                return False
+                #make new vol
+        
+    else:
+        return False
