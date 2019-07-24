@@ -63,7 +63,7 @@ def generate_input_files(id_list):
                 f = open(directory + '/INCAR', "r")
                 lines = f.readlines()
                 with open(directory + '/CONVERGENCE', 'a') as c:
-                    c.write('0 MP_Converge\n\n')
+                    c.write('0 MP_Convergence\n\n')
                     for line in lines:
                         c.write(line)
                 f.close()
