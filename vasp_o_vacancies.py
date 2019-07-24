@@ -4,6 +4,9 @@
 """
 Created on Tue Jul 23 14:55:20 2019
 
+Reads in a list of Materials Project IDs, queries for structures, creates a 2x2x2 supercell, removes a random oxygen from each 
+structure, and writes the Vasp input files as those from pymatgen's MPRelaxSet in the directory 'o_vacancies.'
+
 @author: rymo1354
 """
 
@@ -26,22 +29,22 @@ def get_Structures(id_list):
 
     m = MPRester('JicHL6n3RTB4qVfI')
     structures = []
-    for t_id in id_list:
-        structure = m.get_structures(t_id, final=True)[0]
+    for mp_id in id_list:
+        structure = m.get_structures(mp_id, final=True)[0]
         structures.append(structure)
 
-    return structures
+    return structures # list of the queried MP_ID structures
 
 def generate_input_files(id_list):
 
     pwd = os.getcwd()
-    workflow_name = 'o_vacancies'
+    workflow_name = 'o_vacancies' # needs to be the same workflow name as in vasp_o_vacancies.WORKFLOW_COMMANDS
     workflow_path = os.path.join(pwd, workflow_name)
 
     if os.path.isdir(workflow_path) == False:
         os.mkdir(workflow_path)
 
-    structures = get_Structures(id_list)
+    structures = get_Structures(id_list) # gets the list of structures to perform supercell transformation and O removal
 
     for structure in structures:
 
@@ -51,25 +54,25 @@ def generate_input_files(id_list):
         structure.remove_sites([random_O_index])
 
         batch_write_input([structure], vasp_input_set=MPRelaxSet, output_dir=workflow_path,
-                      make_dir_if_not_present=True)
+                      make_dir_if_not_present=True) # writes the directories containing Vasp inputs to 'o_vacancies' directory
 
     dirs = [x[0] for x in os.walk(workflow_path)]
-    dirs.remove(workflow_path)
+    dirs.remove(workflow_path) # list of directories within 'o_vacancies'
 
     for directory in dirs:
         for file in os.listdir(directory):
             if file == 'INCAR':
 
                 f = open(directory + '/INCAR', "r+")
-                f.write('NPAR = 2\n')
+                f.write('NPAR = 2\n') # adds the NPAR tag to enable parallelization, not included in MPRelaxSet INCAR tags
                 lines = f.readlines()
-                with open(directory + '/CONVERGENCE', 'a') as c:
-                    c.write('0 MP_Converge\n\n')
+                with open(directory + '/CONVERGENCE', 'a') as c: 
+                    c.write('0 MP_Converge\n\n') # writes CONVERGENCE file to each subdirectory in 'o_vacancies'
                     for line in lines:
                         c.write(line)
                 f.close()
 
-    write_workflow_convergence_file(workflow_path, False)
+    write_workflow_convergence_file(workflow_path, False) # writes the TASK_CONVERGENCE file to 'o_vacancies'
 
     return
   
