@@ -29,7 +29,8 @@ def gen_input():
   init_volume = structure.volume
   scaled_structures = []
   for sf in inital_scale_factors:
-      scaled_structures.append(structure.scale_lattice(sf*init_volume))
+      structure.scale_lattice(sf*init_volume)
+      scaled_structures.append(structure)
   
   batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet,
                     output_dir=workflow_path)
