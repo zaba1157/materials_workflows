@@ -52,6 +52,7 @@ def check_converged():
   if volume_workflow_is_converged(pwd,max_num_submission_failures,min_num_converged_vols) == True:
     write_workflow_convergence_file(pwd, True)
     job_path = get_minimum_energy_job(pwd)
+    copy(os.path.join(job_path,'CONTCAR'),os.path.join(pwd,'POSCAR')) #copy POSCAR for next workflow task
     stage_number = get_workflow_stage_number(pwd)
     job_to_pass = os.path.join(pwd,str(stage_number)+'_final')
     for root, dirs, files in os.walk(job_path):
