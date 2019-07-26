@@ -24,9 +24,21 @@ def surf_convergence(inital_kpoints, final_kpoints):
     return step0 + step1 + step2 + step3
 
 
-def bulk_convergence(inital_kpoints, final_kpoints):
-  
-    step0 = ['\n0 Very_Rough_Converge\n', 'NPAR = 1',
+def bulk_convergence(inital_kpoints, final_kpoints, natoms):
+    if natoms < 12:
+        npar = 'NPAR = 3'
+        kpar = 'KPAR = 4'
+        auto_nodes = 'AUTO_NODES = 1'
+    elif natoms > 100:
+        npar = ' '
+        kpar = ' '
+        auto_nodes = 'AUTO_NODES = 2'
+    else:
+        npar = ' '
+        kpar = ' '
+        auto_nodes = 'AUTO_NODES = 1'  
+        
+    step0 = ['\n0 Very_Rough_Converge\n', npar,kpar,auto_nodes
            'PREC = Normal','ENCUT = 520','NSW = 5000',
            'EDIFFG = 0.1','EDIFF = 1e-3','NELMIN = 10',
            'NELM = 80','ALGO = Fast','LAECHG = .FALSE.','SIGMA = 0.05',
