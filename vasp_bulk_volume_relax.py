@@ -45,11 +45,11 @@ def gen_input():
 def check_converged():
   min_num_converged_vols = 4
   max_num_submission_failures = 2
-  
+  vol_tolerance = 1 #ang^3
   pwd = os.getcwd()
 
   
-  if volume_workflow_is_converged(pwd,max_num_submission_failures,min_num_converged_vols) == True:
+  if volume_workflow_is_converged(pwd,max_num_submission_failures,min_num_converged_vols,vol_tolerance) == True:
     write_workflow_convergence_file(pwd, True)
     job_path = get_minimum_energy_job(pwd)
     copy(os.path.join(job_path,'CONTCAR'),os.path.join(pwd,'POSCAR')) #copy POSCAR for next workflow task
