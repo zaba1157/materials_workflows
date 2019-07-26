@@ -33,7 +33,8 @@ def gen_input():
         if file == 'POSCAR':
           kpoints1 = get_kpoints(os.path.join(root,'POSCAR'), 300)
           kpoints2 = get_kpoints(os.path.join(root,'POSCAR'), 1000)
-          convergence_writelines = bulk_convergence(kpoints1,kpoints2)
+          natoms = len(Poscar.from_file(os.path.join(root,'POSCAR')).structure)
+          convergence_writelines = bulk_convergence(kpoints1,kpoints2,natoms)
           write_vasp_convergence_file(root,convergence_writelines)
   
 def check_converged():
