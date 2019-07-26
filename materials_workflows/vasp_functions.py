@@ -502,7 +502,7 @@ def remove_sys_incar(path):
     with open(filepath,'w') as f:
         f.writelines( data )
         
-def volume_workflow_is_converged(pwd,max_num_sub,min_num_vols):
+def volume_workflow_is_converged(pwd,max_num_sub,min_num_vols,volume_tolerance):
     workflow_converged_list = []
     E,V = [],[]
     minE = 100
@@ -563,7 +563,7 @@ def volume_workflow_is_converged(pwd,max_num_sub,min_num_vols):
             eos = EOS(eos_name='murnaghan')
             eos_fit = eos.fit(volumes, energies)
             eos_minV = eos_fit.v0
-            if abs(eos_minV - minV) < 1: #1 ang cutoff
+            if abs(eos_minV - minV) < volume_tolerance: # ang^3 cutoff
                 return True
                 #eos_fit.plot()
                 
@@ -583,7 +583,7 @@ def volume_workflow_is_converged(pwd,max_num_sub,min_num_vols):
                     remove_sys_incar(write_path)
                 
                 return False
-                #make new vol
+                
         
     else:
         return False
