@@ -38,7 +38,7 @@ def bulk_convergence(inital_kpoints, final_kpoints, natoms):
         kpar = ' '
         auto_nodes = 'AUTO_NODES = 1'  
         
-    step0 = ['\n0 Very_Rough_Converge\n', npar,kpar,auto_nodes
+    step0 = ['\n0 Very_Rough_Converge\n', npar,kpar,auto_nodes,
            'PREC = Normal','ENCUT = 520','NSW = 5000',
            'EDIFFG = 0.1','EDIFF = 1e-3','NELMIN = 10',
            'NELM = 80','ALGO = Fast','LAECHG = .FALSE.','SIGMA = 0.05',
