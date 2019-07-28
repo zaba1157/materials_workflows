@@ -42,7 +42,7 @@ def check_converged():
   if workflow_is_converged(pwd) == True:
     write_workflow_convergence_file(pwd, True)
     job_path = get_minimum_energy_job(pwd)
-    stg_path = os.path.dirname(os.path.dirname(pwd))
+    stg_path = os.path.dirname(pwd)
     stage_number = get_workflow_stage_number(stg_path)
     job_to_pass = os.path.join(pwd,str(stage_number)+'_final')
     for root, dirs, files in os.walk(job_path):
