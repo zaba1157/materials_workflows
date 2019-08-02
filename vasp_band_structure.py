@@ -6,13 +6,11 @@ from shutil import copy, move
 
 from scripts.band_structure_inputs import BandStructureFiles
 from materials_workflows.vasp_convergence.convergence_inputs import band_structure_calculation
-from materials_workflows.vasp_functions import write_workflow_convergence_file, write_vasp_convergence_file
-from materials_workflows.vasp_functions import workflow_is_converged
 
-from materials_workflows.vasp_functions import get_previous_pass_path, get_structure_from_pass_path, write_workflow_convergence_file
-from materials_workflows.vasp_functions import get_kpoints, write_vasp_convergence_file, workflow_is_converged
-from materials_workflows.vasp_functions import get_minimum_energy_job, move_job_to_pass_path
-from materials_workflows.vasp_convergence.convergence_inputs import bulk_convergence
+from materials_workflows.vasp_functions import write_vasp_convergence_file, workflow_is_converged
+
+from materials_workflows.vasp_functions import write_workflow_convergence_file, move_job_to_pass_path, get_previous_pass_path
+ 
 
 ################################################
 
