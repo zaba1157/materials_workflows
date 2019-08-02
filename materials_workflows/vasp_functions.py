@@ -269,7 +269,7 @@ def get_workflow_stage_number(pwd):
     return current_workflow_stage_number
 
 def get_workflow_stage_number_from_name(wf_command_path, workflow_name):
-    with open(os.path.join(root,'WORKFLOW_COMMANDS')) as fd:
+    with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
         lines = [line.split(',') for line in fd]
 
         workflow_input_commands_dict = {line[4].rstrip():line[1] for line in lines if len(line) == 5 and line[0].isdigit()}
@@ -287,7 +287,7 @@ def get_workflow_stage_number_from_name(wf_command_path, workflow_name):
                 return task_stage_number
             
 def get_workflow_name_from_stage_number(wf_command_path, workflow_stage):
-    with open(os.path.join(root,'WORKFLOW_COMMANDS')) as fd:
+    with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
         lines = [line.split(',') for line in fd]
 
         workflow_input_commands_dict = {line[4].rstrip():line[1] for line in lines if len(line) == 5 and line[0].isdigit()}
