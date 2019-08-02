@@ -308,13 +308,14 @@ def workflow_progress(top_dir):
                                 max_workflow_stage_number = task_stage_number
                             if task_stage_number == int(current_workflow_stage_number):
                                 
-                                os.chdir(workflow_path)
+                                #os.chdir(workflow_path)
                                 convergence_file = os.path.join(workflow_path,'TASK_CONVERGENCE')
                                 if os.path.exists(convergence_file):
                                     task_convergence = Incar().from_file(convergence_file)
                                     if task_convergence['TASK_CONVERGED'] == True:
                                         upgrade_workflow_list.append(True)
                                     else:
+                                        os.chdir(root)
                                         os.system(task_convergence_command)
                                         if task_convergence['TASK_CONVERGED'] == True:
                                                 upgrade_workflow_list.append(True) 
@@ -323,7 +324,8 @@ def workflow_progress(top_dir):
                                             rerun_command = task_rerun_command        
 
                                 else:
-                                    os.chdir(workflow_path)
+                                    #os.chdir(workflow_path)
+                                    os.chdir(root)
                                     os.system(task_convergence_command)
                                     if task_convergence['TASK_CONVERGED'] == True:
                                             upgrade_workflow_list.append(True) 
@@ -332,8 +334,9 @@ def workflow_progress(top_dir):
                                         rerun_command = task_rerun_command
                                         
                                 if rerun_command != None:
-                                    os.chdir(workflow_path)
-                                    if str(rerun_command) != 'vasp_run':                                    
+                                    #os.chdir(workflow_path)
+                                    if str(rerun_command) != 'vasp_run':
+                                        os.chdir(root)
                                         os.system(rerun_command)
                                         other_calculators_in_workflow = True 
                                     
@@ -352,8 +355,9 @@ def workflow_progress(top_dir):
                                         #workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command])) 
                                         os.chdir(root)
                                         os.system(task_input_command)
-                                        os.chdir(workflow_path)
-                                        if str(task_rerun_command) != 'vasp_run':                                 
+                                        #os.chdir(workflow_path)
+                                        if str(task_rerun_command) != 'vasp_run': 
+                                            os.chdir(root)
                                             os.system(task_rerun_command)
                                             other_calculators_in_workflow = True
                                         else:
@@ -375,7 +379,7 @@ def workflow_progress(top_dir):
                         if task_stage_number == int(current_workflow_stage_number):
                             os.chdir(root)
                             os.system(task_input_command)
-                            os.chdir(workflow_path)
+                            #os.chdir(workflow_path)
                             #print(str(task_rerun_command))
                             if str(task_rerun_command) != 'vasp_run':                                   
                                 os.system(task_rerun_command)
@@ -383,7 +387,7 @@ def workflow_progress(top_dir):
                             else:
                                 default_workflow_nameing(workflow_path, task_name)
                                             
-                                            
+    os.chdir(top_dir)                                        
     return other_calculators_in_workflow, workflow_commands_in_workflow
 
 def driver():
