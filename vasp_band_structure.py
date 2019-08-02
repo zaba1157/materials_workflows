@@ -9,19 +9,30 @@ from materials_workflows.vasp_convergence.convergence_inputs import band_structu
 from materials_workflows.vasp_functions import write_workflow_convergence_file, write_vasp_convergence_file
 from materials_workflows.vasp_functions import workflow_is_converged
 
+from materials_workflows.vasp_functions import get_previous_pass_path, get_structure_from_pass_path, write_workflow_convergence_file
+from materials_workflows.vasp_functions import get_kpoints, write_vasp_convergence_file, workflow_is_converged
+from materials_workflows.vasp_functions import get_minimum_energy_job, move_job_to_pass_path
+from materials_workflows.vasp_convergence.convergence_inputs import bulk_convergence
+
+################################################
+
+''' Define Global Variables '''
+
+workflow_name = 'band_structure'
+
+pwd = os.getcwd()
+workflow_path = os.path.join(pwd,workflow_name)
+
+################################################
+
 def generate_input_files():
 
-    pwd = os.getcwd()
-    workflow_name = 'band_structure'
-    workflow_path = os.path.join(pwd, workflow_name)
-    if os.path.isdir(workflow_path) == False:
-        os.mkdir(workflow_path)
+    os.mkdir(workflow_path)
+    start_path = get_previous_pass_path(pwd,workflow_name)
+    copy(start_path + '/WAVECAR', workflow_path)
+    copy(start_path + '/CHGCAR', workflow_path)
 
-    files_path = pwd + '/bulk_mag' + '/0_final'  # this directory path is specific to the magnetic_sampling->band_structure wor$
-    copy(files_path + '/WAVECAR', workflow_path)
-    copy(files_path + '/CHGCAR', workflow_path)
-
-    files = BandStructureFiles(files_path)
+    files = BandStructureFiles(start_path)
     files.kpoints.write_file(workflow_path + '/KPOINTS')
     files.new_incar.write_file(workflow_path + '/INCAR')
     files.poscar.write_file(workflow_path + '/POSCAR')
@@ -31,24 +42,19 @@ def generate_input_files():
     convergence_writelines = band_structure_calculation()
     write_vasp_convergence_file(workflow_path, convergence_writelines) # CONVERGENCE
 
-    return
-
 def check_converged():
 
     ''' Checks for convergence; rewrites to 'TASK_CONVERGED = True' in 'TASK_CONVERGENCE' file if true '''
-
-    pwd = os.getcwd()
-
-    if workflow_is_converged(pwd) == True:
-        write_workflow_convergence_file(pwd, True)
-    else:
-        write_workflow_convergence_file(pwd, False)
-
-    return
+    
+  if workflow_is_converged(workflow_path) == True:
+    write_workflow_convergence_file(workflow_path, True)
+    move_job_to_pass_path(pwd,workflow_path,workflow_name)
+ 
+  else:
+    write_workflow_convergence_file(workflow_path, False)
 
 def rerun_task():
     ''' Only needed for non-VASP calculations '''
-
     pass
 
 
