@@ -20,6 +20,7 @@ from materials_workflows.vasp_convergence.convergence_inputs import bulk_converg
 def gen_input():
   pwd = os.getcwd()
   workflow_name = 'bulk_mag'
+  stage_number = get_workflow_stage_number_from_name(workflow_name)
   workflow_path = os.path.join(pwd,workflow_name)
   os.mkdir(workflow_path)
   structure = Poscar.from_file(os.path.join(pwd,'POSCAR')).structure
@@ -39,16 +40,19 @@ def gen_input():
   
 def check_converged():
   pwd = os.getcwd()
-  if workflow_is_converged(pwd) == True:
-    write_workflow_convergence_file(pwd, True)
-    job_path = get_minimum_energy_job(pwd)
+  workflow_name = 'bulk_mag'
+  workflow_path = os.path.join(pwd,workflow_name)
+  #os.chdir(workflow_path)
+  if workflow_is_converged(workflow_path) == True:
+    write_workflow_convergence_file(workflow_path, True)
+    job_path = get_minimum_energy_job(workflow_path)
     stage_number = get_workflow_stage_number(pwd)
-    job_to_pass = os.path.join(pwd,str(stage_number)+'_final')
+    job_to_pass = os.path.join(pwd,str(stage_number)+'_'+str(workflow_name)+'_final')
     for root, dirs, files in os.walk(job_path):
         for file in files:
           move(os.path.join(root,file),job_to_pass)  
   else:
-    write_workflow_convergence_file(pwd, False)
+    write_workflow_convergence_file(workflow_path, False)
     
     
 def rerun_task():
