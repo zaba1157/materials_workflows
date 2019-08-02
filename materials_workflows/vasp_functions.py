@@ -269,32 +269,40 @@ def get_workflow_stage_number(pwd):
     return current_workflow_stage_number
 
 def get_workflow_stage_number_from_name(wf_command_path, workflow_name):
-    with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
-        pairs = (line.split(None) for line in fd)
-        workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
-        #workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
-        workflow_run_directory_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
-        #workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+    with open(os.path.join(root,'WORKFLOW_COMMANDS')) as fd:
+        lines = [line.split(',') for line in fd]
+
+        workflow_input_commands_dict = {line[4].rstrip():line[1] for line in lines if len(line) == 5 and line[0].isdigit()}
+        workflow_convergence_commands_dict = {line[4].rstrip():line[2] for line in lines if len(line) == 5 and line[0].isdigit()}
+        workflow_rerun_commands_dict = {line[4].rstrip():line[3] for line in lines if len(line) == 5 and line[0].isdigit()}
+        workflow_stage_numbers_dict = {line[4].rstrip():line[0] for line in lines if len(line) == 5 and line[0].isdigit()}
         fd.close()
-    for workflow_command in workflow_commands_dict:
-        name = workflow_run_directory_dict[workflow_command]
-        if name == workflow_name:
-            stage_number = workflow_commands_dict[workflow_command]
-            return int(stage_number)
-        
+            
+        for task_name in workflow_input_commands_dict:
+            task_stage_number = int(workflow_stage_numbers_dict[task_name])
+            task_input_command = workflow_input_commands_dict[task_name]
+            task_convergence_command = workflow_convergence_commands_dict[task_name]
+            task_rerun_command = workflow_rerun_commands_dict[task_name]
+            if task_name == workflow_name:
+                return task_stage_number
+            
 def get_workflow_name_from_stage_number(wf_command_path, workflow_stage):
-    with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
-        pairs = (line.split(None) for line in fd)
-        workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
-        #workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
-        workflow_run_directory_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
-        #workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+    with open(os.path.join(root,'WORKFLOW_COMMANDS')) as fd:
+        lines = [line.split(',') for line in fd]
+
+        workflow_input_commands_dict = {line[4].rstrip():line[1] for line in lines if len(line) == 5 and line[0].isdigit()}
+        workflow_convergence_commands_dict = {line[4].rstrip():line[2] for line in lines if len(line) == 5 and line[0].isdigit()}
+        workflow_rerun_commands_dict = {line[4].rstrip():line[3] for line in lines if len(line) == 5 and line[0].isdigit()}
+        workflow_stage_numbers_dict = {line[4].rstrip():line[0] for line in lines if len(line) == 5 and line[0].isdigit()}
         fd.close()
-    for workflow_command in workflow_commands_dict:
-        stage_number = workflow_commands_dict[workflow_command]      
-        if stage_number == workflow_stage:
-            name = workflow_run_directory_dict[workflow_command]
-            return name   
+            
+        for task_name in workflow_input_commands_dict:
+            task_stage_number = int(workflow_stage_numbers_dict[task_name])
+            task_input_command = workflow_input_commands_dict[task_name]
+            task_convergence_command = workflow_convergence_commands_dict[task_name]
+            task_rerun_command = workflow_rerun_commands_dict[task_name]
+            if task_stage_number == workflow_stage:
+                return task_name   
         
 def is_init_wf(wf_command_path, wf_name):
     if get_workflow_stage_number_from_name(wf_command_path, wf_name) == 0:
