@@ -19,7 +19,7 @@ from materials_workflows.vasp_convergence.convergence_inputs import bulk_converg
 
 ################################################
 
-# Define Global Variables #
+''' Define Global Variables '''
 
 workflow_name = 'bulk_mag'
 
