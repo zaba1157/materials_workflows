@@ -267,7 +267,20 @@ def get_workflow_stage_number(pwd):
     current_workflow_stage_number = workflow_stage['WORKFLOW_STAGE_NUMBER']
     
     return current_workflow_stage_number
-    
+
+def get_workflow_stage_number_from_name(wf_command_path, workflow_name):
+    with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
+        pairs = (line.split(None) for line in fd)
+        workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
+        workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
+        workflow_run_directory_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+        workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+        fd.close()
+    for workflow_command in workflow_commands_dict:
+        name = workflow_run_directory_dict[workflow_command]
+        if name == workflow_name:
+            stage_number = workflow_commands_dict[workflow_command]
+            return stage_number
     
 def rerun_job(job_type, job_name):
     if job_type == 'multi':
