@@ -280,7 +280,8 @@ def get_workflow_stage_number_from_name(wf_command_path, workflow_name):
         name = workflow_run_directory_dict[workflow_command]
         if name == workflow_name:
             stage_number = workflow_commands_dict[workflow_command]
-            return stage_number
+            return int(stage_number)
+        
 def get_workflow_name_from_stage_number(wf_command_path, workflow_stage):
     with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
         pairs = (line.split(None) for line in fd)
