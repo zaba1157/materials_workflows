@@ -20,7 +20,9 @@ from materials_workflows.vasp_convergence.convergence_inputs import bulk_converg
 def gen_input():
   pwd = os.getcwd()
   workflow_name = 'bulk_mag'
-  stage_number = get_workflow_stage_number_from_name(workflow_name)
+  stage_number = get_workflow_stage_number_from_name(wf_command_path, workflow_name)
+  #if stage_number == 0:
+    
   workflow_path = os.path.join(pwd,workflow_name)
   os.mkdir(workflow_path)
   structure = Poscar.from_file(os.path.join(pwd,'POSCAR')).structure
