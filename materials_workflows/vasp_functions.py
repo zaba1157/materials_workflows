@@ -272,15 +272,80 @@ def get_workflow_stage_number_from_name(wf_command_path, workflow_name):
     with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
         pairs = (line.split(None) for line in fd)
         workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
-        workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
+        #workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
         workflow_run_directory_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
-        workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+        #workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
         fd.close()
     for workflow_command in workflow_commands_dict:
         name = workflow_run_directory_dict[workflow_command]
         if name == workflow_name:
             stage_number = workflow_commands_dict[workflow_command]
             return stage_number
+def get_workflow_name_from_stage_number(wf_command_path, workflow_stage):
+    with open(os.path.join(wf_command_path,'WORKFLOW_COMMANDS')) as fd:
+        pairs = (line.split(None) for line in fd)
+        workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
+        #workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
+        workflow_run_directory_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+        #workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
+        fd.close()
+    for workflow_command in workflow_commands_dict:
+        stage_number = workflow_commands_dict[workflow_command]      
+        if stage_number == workflow_stage:
+            name = workflow_run_directory_dict[workflow_command]
+            return name   
+        
+def is_init_wf(wf_command_path, wf_name):
+    if get_workflow_stage_number_from_name(wf_command_path, wf_name) == 0:
+        if os.path.exists(os.path.join(wf_command_path,wf_name)) == False:
+            return True
+        else:
+            return False
+    else:
+        return False
+    
+def write_init_wf(wf_command_path, wf_name):
+    if is_init_wf(wf_command_path, wf_name) == True:
+        wf_init_path = os.path.join(wf_command_path, '0_Init')
+        for root, dirs, files in os.walk(wf_command_path):
+            for file in files:
+                if 'WORKFLOW' not in file:
+                    move(os.path.join(root,file),wf_init_path)
+                    
+def get_structure_from_pass_path(pass_path):
+    if os.path.exists(os.path.join(pass_path,'CONTCAR')) == True:
+        return Poscar.from_file(os.path.join(pass_path,'CONTCAR')).structure
+    else:
+        return Poscar.from_file(os.path.join(pass_path,'POSCAR')).structure
+        
+        
+def get_previous_pass_path(wf_command_path,wf_name):
+    
+    init_path = os.path.join(wf_command_path, '0_Init')
+    
+    if is_init_wf(wf_command_path, wf_name) == False:
+        current_stage = get_workflow_stage_number_from_name(wf_command_path, wf_name)
+        previous_stage = current_stage - 1
+        previous_wf_name = get_workflow_name_from_stage_number(wf_command_path, previous_stage)
+        pass_path = os.path.join(wf_command_path,str(previous_stage)+'_'+previous_wf_name+'_final')
+        return pass_path
+    
+    elif os.path.exists(init_path) == False:
+        write_init_wf(wf_command_path, wf_name)
+        return init_path
+    else:
+        return init_path
+    
+                         
+def move_job_to_pass_path(wf_command_path,final_job_path,wf_name):
+    stage_number = get_workflow_stage_number_from_name(wf_command_path, wf_name)
+    pass_path = os.path.join(wf_command_path,str(stage_number)+'_'+wf_name+'_final')
+    for root, dirs, files in os.walk(final_job_path):
+        for file in files:
+            move(os.path.join(root,file),job_to_pass)
+       
+    
+    
     
 def rerun_job(job_type, job_name):
     if job_type == 'multi':
