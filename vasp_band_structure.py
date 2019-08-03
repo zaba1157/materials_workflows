@@ -57,8 +57,8 @@ def check_converged():
         write_workflow_convergence_file(workflow_path, False)
 
 def rerun_task():
-  #only needed for non-VASP calculations
-  pass
+    #only needed for non-VASP calculations
+    pass
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -76,4 +76,3 @@ if __name__ == '__main__':
       check_converged()
     else:
       rerun_task()
-
