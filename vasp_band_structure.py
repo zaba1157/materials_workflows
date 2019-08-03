@@ -29,7 +29,7 @@ workflow_path = os.path.join(pwd,workflow_name)
 
 ################################################
 
-def generate_input_files():
+def gen_input():
     start_path = get_previous_pass_path(pwd,workflow_name)
   
     os.mkdir(workflow_path)
@@ -58,29 +58,24 @@ def check_converged():
     write_workflow_convergence_file(workflow_path, False)
 
 def rerun_task():
-    ''' Only needed for non-VASP calculations '''
-    pass
-
+  #only needed for non-VASP calculations
+  pass
 
 if __name__ == '__main__':
-
     parser = argparse.ArgumentParser()
-
     parser.add_argument('-i', '--gen_inputs', help='Generates inputs for workflow.',
                         action='store_true')
     parser.add_argument('-c', '--converged', help='Checks for convergence of workflow.',
                         action='store_true')
-    parser.add_argument('-r', '--rerun', help='Reruns workflow. This does nothing if vasp workflow.',
+    parser.add_argument('-r', '--rerun', help='Reruns worklow. This does nothing if vasp workflow.',
                         action='store_true')
     args = parser.parse_args()
-
+    
     if args.gen_inputs:
-        generate_input_files()
-
+      gen_input()
     elif args.converged:
-        check_converged()
-
+      check_converged()
     else:
-        rerun_task()
+      rerun_task()
 
 
