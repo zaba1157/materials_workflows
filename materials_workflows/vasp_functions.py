@@ -316,6 +316,7 @@ def is_init_wf(wf_command_path, wf_name):
 def write_init_wf(wf_command_path, wf_name):
     if is_init_wf(wf_command_path, wf_name) == True:
         wf_init_path = os.path.join(wf_command_path, '0_Init')
+        os.mkdir(wf_init_path)
         for root, dirs, files in os.walk(wf_command_path):
             for file in files:
                 if 'WORKFLOW' not in file:
