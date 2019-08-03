@@ -352,7 +352,7 @@ def move_job_to_pass_path(wf_command_path,final_job_path,wf_name):
     pass_path = os.path.join(wf_command_path,str(stage_number)+'_'+wf_name+'_final')
     for root, dirs, files in os.walk(final_job_path):
         for file in files:
-            move(os.path.join(root,file),job_to_pass)
+            move(os.path.join(root,file),pass_path)
        
     
     
@@ -453,119 +453,7 @@ def vasp_run_main(pwd):
     
     return computed_entries                    
 
-def workflow_progress(pwd):
-    other_calculators_in_workflow = False
-    for root, dirs, files in os.walk(pwd):
-        for file in files:
-            if file == 'WORKFLOW_COMMANDS':                
-                with open(os.path.join(root,'WORKFLOW_COMMANDS')) as fd:
-                    pairs = (line.split(None) for line in fd)
-                    workflow_commands_dict   = {pair[1]:int(pair[0]) for pair in pairs if len(pair) == 5 and pair[0].isdigit()}  
-                    workflow_convergence_command_dict = {pair[1]:pair[2] for pair in pairs if len(pair) == 5 and pair[0].isdigit()}
-                    workflow_run_directory_dict = {pair[1]:pair[3] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
-                    workflow_rerun_command_dict = {pair[1]:pair[4] for pair in pairs if len(pair) == 5 and pair[0].isdigit()} 
-                    fd.close()
-                    
-                if os.path.exists(os.path.join(root,'WORKFLOW_STAGE')):
-                        workflow_stage = Incar().from_file(os.path.join(root,'WORKFLOW_STAGE'))
-                        current_workflow_stage_number = workflow_stage['WORKFLOW_STAGE_NUMBER']
-                        max_workflow_stage_number = 0
-                        rerun_command = None
-                        upgrade_workflow_list = []
-                        for workflow_command in workflow_commands_dict:
-                            if workflow_commands_dict[workflow_command] > max_workflow_stage_number:
-                                max_workflow_stage_number = workflow_commands_dict[workflow_command]
-                            if workflow_commands_dict[workflow_command] == int(current_workflow_stage_number):
-                                workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command]))
-                                os.chdir(workflow_path)
-                                convergence_file = os.path.join(workflow_path,'WORKFLOW_CONVERGENCE')
-                                if os.path.exists(convergence_file):
-                                    workflow_convergence = Incar().from_file(convergence_file)
-                                    if workflow_convergence['WORKFLOW_CONVERGED'] == True:
-                                        upgrade_workflow_list.append(True)
-                                    else:
-                                        os.system(str(workflow_convergence_command_dict[workflow_command]))
-                                        if workflow_convergence['WORKFLOW_CONVERGED'] == True:
-                                                upgrade_workflow_list.append(True) 
-                                        else:       
-                                            upgrade_workflow_list.append(False)                                        
-                                            rerun_command = str(workflow_rerun_command_dict[workflow_command])        
-
-                                else:
-                                    os.system(str(workflow_convergence_command_dict[workflow_command]))
-                                    if workflow_convergence['WORKFLOW_CONVERGED'] == True:
-                                            upgrade_workflow_list.append(True) 
-                                    else:       
-                                        upgrade_workflow_list.append(False)                                        
-                                        rerun_command = str(workflow_rerun_command_dict[workflow_command])
-                                        
-                            if rerun_command != None:
-                                if rerun_command != 'vasp_run' or 'vasp' or 'Vasp':                                    
-                                    os.system(rerun_command)
-                                    other_calculators_in_workflow = True    
-                        if False not in upgrade_workflow_list:
-                            if current_workflow_stage_number < max_workflow_stage_number:                                
-                                replace(os.path.join(root,'WORKFLOW_STAGE'), str(current_workflow_stage_number), str(current_workflow_stage_number+1))
-                                current_workflow_stage_number+=1
-                                for workflow_command in workflow_commands_dict:
-                                    if workflow_commands_dict[workflow_command] == int(current_workflow_stage_number):
-                                        workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command]))
-                                        os.chdir(workflow_path)
-                                        os.system(workflow_command)
-                                        rerun_command = str(workflow_rerun_command_dict[workflow_command])
-                                        if rerun_command != 'vasp_run' or 'vasp' or 'Vasp':                                 
-                                            os.system(rerun_command)
-                                            other_calculators_in_workflow = True
-                            elif current_workflow_stage_number == max_workflow_stage_number:
-                                #name = str(workflow_run_directory_dict[workflow_command])
-                                print('\n'+root+': WORKFLOW COMPLETE \n')
-                else:
-                    with open(os.path.join(root,'WORKFLOW_STAGE'),'w') as f:
-                        f.write('WORKFLOW_STAGE_NUMBER = 0')
-                        f.close()
-                    current_workflow_stage_number=0
-                    for workflow_command in workflow_commands_dict:
-                        if workflow_commands_dict[workflow_command] == int(current_workflow_stage_number):
-                            workflow_path = os.path.join(root,str(workflow_run_directory_dict[workflow_command]))
-                            os.chdir(workflow_path)
-                            os.system(workflow_command)
-                            rerun_command = str(workflow_rerun_command_dict[workflow_command])
-                            if rerun_command != 'vasp_run' or 'vasp' or 'Vasp':                                   
-                                os.system(rerun_command)
-                                other_calculators_in_workflow = True
-                                
-                return other_calculators_in_workflow
-
-def driver():
-    pwd = os.getcwd()
-    other_calculators_in_workflow = workflow_progress(pwd)
-        
-    num_jobs_in_workflow = check_num_jobs_in_workflow(pwd)  #only checks for vasp jobs
-        
-    if num_jobs_in_workflow > 1 or other_calculators_in_workflow == True:
-        if os.path.exists(os.path.join(pwd,'WORKFLOW_NAME')):
-            workflow_file = Incar().from_file(os.path.join(pwd,'WORKFLOW_NAME'))
-            workflow_name = workflow_file['NAME']
-    
-        else:
-                
-            workflow_name = input("Please enter a name for this workflow: ")
-            with open(os.path.join(pwd,'WORKFLOW_NAME'),'w') as f:
-                writeline = 'NAME = '+str(workflow_name)
-                f.write(writeline)
-                f.close()        
-            
-        computed_entries = vasp_run_main(pwd)
-                
-    else:
-        workflow_name = get_single_job_name(pwd)    
-        computed_entries = vasp_run_main(pwd)
-        
-    if not computed_entries:
-        pass
-    else:        
-        with open(os.path.join(pwd,str(workflow_name) +'_converged.json'),'w') as f:
-            json.dump(computed_entries, f)  
+  
             
             
 from pymatgen.analysis.eos import EOS
