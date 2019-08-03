@@ -319,7 +319,7 @@ def write_init_wf(wf_command_path, wf_name):
         os.mkdir(wf_init_path)
         for root, dirs, files in os.walk(wf_command_path):
             for file in files:
-                if 'WORKFLOW' not in file:
+                if 'WORKFLOW' not in file and wf_init_path not in root:
                     move(os.path.join(root,file),wf_init_path)
                     
 def get_structure_from_pass_path(pass_path):
