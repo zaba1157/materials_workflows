@@ -338,6 +338,7 @@ def get_previous_pass_path(wf_command_path,wf_name):
         previous_stage = current_stage - 1
         previous_wf_name = get_workflow_name_from_stage_number(wf_command_path, previous_stage)
         pass_path = os.path.join(wf_command_path,str(previous_stage)+'_'+previous_wf_name+'_final')
+        os.mkdir(pass_path)
         return pass_path
     
     elif os.path.exists(init_path) == False:
