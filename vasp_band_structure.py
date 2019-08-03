@@ -24,9 +24,9 @@ workflow_path = os.path.join(pwd,workflow_name)
 ################################################
 
 def generate_input_files():
-
-    os.mkdir(workflow_path)
     start_path = get_previous_pass_path(pwd,workflow_name)
+  
+    os.mkdir(workflow_path)
     copy(start_path + '/WAVECAR', workflow_path)
     copy(start_path + '/CHGCAR', workflow_path)
 
