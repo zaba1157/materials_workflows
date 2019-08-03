@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Aug  2 18:44:20 2019
-
 @author: Ryan Morelock
 """
 
 import os
 import argparse
-from shutil import copy, move
+from shutil import copy
 
 from scripts.band_structure_inputs import BandStructureFiles
 from materials_workflows.vasp_convergence.convergence_inputs import band_structure_calculation
@@ -50,12 +49,12 @@ def check_converged():
 
     ''' Checks for convergence; rewrites to 'TASK_CONVERGED = True' in 'TASK_CONVERGENCE' file if true '''
     
-  if workflow_is_converged(workflow_path) == True:
-    write_workflow_convergence_file(workflow_path, True)
-    move_job_to_pass_path(pwd,workflow_path,workflow_name)
- 
-  else:
-    write_workflow_convergence_file(workflow_path, False)
+    if workflow_is_converged(workflow_path) == True:
+        write_workflow_convergence_file(workflow_path, True)
+        move_job_to_pass_path(pwd,workflow_path,workflow_name)
+     
+    else:
+        write_workflow_convergence_file(workflow_path, False)
 
 def rerun_task():
   #only needed for non-VASP calculations
@@ -77,5 +76,4 @@ if __name__ == '__main__':
       check_converged()
     else:
       rerun_task()
-
 
