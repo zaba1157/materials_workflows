@@ -338,7 +338,6 @@ def get_previous_pass_path(wf_command_path,wf_name):
         previous_stage = current_stage - 1
         previous_wf_name = get_workflow_name_from_stage_number(wf_command_path, previous_stage)
         pass_path = os.path.join(wf_command_path,str(previous_stage)+'_'+previous_wf_name+'_final')
-        os.mkdir(pass_path)
         return pass_path
     
     elif os.path.exists(init_path) == False:
@@ -351,6 +350,7 @@ def get_previous_pass_path(wf_command_path,wf_name):
 def move_job_to_pass_path(wf_command_path,final_job_path,wf_name):
     stage_number = get_workflow_stage_number_from_name(wf_command_path, wf_name)
     pass_path = os.path.join(wf_command_path,str(stage_number)+'_'+wf_name+'_final')
+    os.mkdir(pass_path)
     for root, dirs, files in os.walk(final_job_path):
         for file in files:
             move(os.path.join(root,file),pass_path)
