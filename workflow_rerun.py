@@ -397,24 +397,23 @@ def driver():
     num_jobs_in_workflow = check_num_jobs_in_workflow(pwd)  #currently only checks for vasp jobs
     
     
-    if num_jobs_in_workflow > 1 or other_calculators_in_workflow == True or workflow_commands_in_workflow == True :
+    if num_jobs_in_workflow > 1 or other_calculators_in_workflow == True or workflow_commands_in_workflow == True:
         if os.path.exists(os.path.join(pwd,'WORKFLOW_NAME')):
             workflow_file = Incar().from_file(os.path.join(pwd,'WORKFLOW_NAME'))
             workflow_name = workflow_file['NAME']
     
-        else:
-                
+        else:         
+            print('\n')
             workflow_name = input("Please enter a name for this workflow: ")
             with open(os.path.join(pwd,'WORKFLOW_NAME'),'w') as f:
                 writeline = 'NAME = '+str(workflow_name)
                 f.write(writeline)
-                f.close()        
-            
-        computed_entries = vasp_run_main(pwd)
+                f.close()
                 
     else:
-        workflow_name = get_single_job_name(pwd)    
-        computed_entries = vasp_run_main(pwd)
+        workflow_name = get_single_job_name(pwd) 
+        
+    computed_entries = vasp_run_main(pwd)
         
     if not computed_entries:
         pass
