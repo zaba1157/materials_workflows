@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Aug  2 18:44:20 2019
+
+@author: Ryan Morelock
+"""
 
 import os
 import argparse
