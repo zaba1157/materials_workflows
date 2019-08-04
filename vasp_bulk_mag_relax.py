@@ -25,11 +25,10 @@ workflow_name = 'bulk_mag'
 
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd,workflow_name)
-
+start_path = get_previous_pass_path(pwd,workflow_name)
 ################################################
 
 def gen_input():
-  start_path = get_previous_pass_path(pwd,workflow_name)
   
   os.mkdir(workflow_path)
   structure = get_structure_from_pass_path(start_path) 
