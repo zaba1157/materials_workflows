@@ -20,7 +20,7 @@ from materials_workflows.vasp_convergence.convergence_inputs import bulk_converg
 
 ''' Define Global Variables '''
 
-workflow_name = 'FM_MP_relax'
+workflow_name = 'FM_bulk_relax'
 
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd,workflow_name)
