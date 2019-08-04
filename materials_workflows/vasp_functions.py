@@ -351,12 +351,15 @@ def move_job_to_pass_path(wf_command_path,final_job_path,wf_name):
     stage_number = get_workflow_stage_number_from_name(wf_command_path, wf_name)
     pass_path = os.path.join(wf_command_path,str(stage_number)+'_'+wf_name+'_final')
     os.mkdir(pass_path)
+    wf_path = os.path.join(wf_command_path,wf_name)
+    if wf_path != final_job_path:
+       copy(os.path.join(wf_path,'TASK_CONVERGENCE'),pass_path)
     for root, dirs, files in os.walk(final_job_path):
         for file in files:
-            move(os.path.join(root,file),pass_path)
-       
-    
-    
+            if file == 'TASK_CONVERGENCE':
+                copy(os.path.join(root,file),pass_path)
+            else:
+                move(os.path.join(root,file),pass_path) 
     
 def rerun_job(job_type, job_name):
     if job_type == 'multi':
