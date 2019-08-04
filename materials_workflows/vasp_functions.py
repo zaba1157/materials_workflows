@@ -332,9 +332,9 @@ def get_structure_from_pass_path(pass_path):
 def get_previous_pass_path(wf_command_path,wf_name):
     
     init_path = os.path.join(wf_command_path, '0_Init')
-    
-    if is_init_wf(wf_command_path, wf_name) == False:
-        current_stage = get_workflow_stage_number_from_name(wf_command_path, wf_name)
+    current_stage = get_workflow_stage_number_from_name(wf_command_path, wf_name)
+    if is_init_wf(wf_command_path, wf_name) == False and current_stage > 0:
+        
         previous_stage = current_stage - 1
         previous_wf_name = get_workflow_name_from_stage_number(wf_command_path, previous_stage)
         pass_path = os.path.join(wf_command_path,str(previous_stage)+'_'+previous_wf_name+'_final')
