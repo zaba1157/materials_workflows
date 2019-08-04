@@ -10,7 +10,6 @@ import argparse
 from shutil import copy
 
 from scripts.band_structure_inputs import BandStructureFiles
-print('pass')
 from materials_workflows.vasp_convergence.convergence_inputs import band_structure_calculation
 
 from materials_workflows.vasp_functions import write_vasp_convergence_file, workflow_is_converged
@@ -26,11 +25,12 @@ workflow_name = 'band_structure'
 
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd,workflow_name)
+start_path = get_previous_pass_path(pwd,workflow_name)
 
 ################################################
 
 def gen_input():
-    start_path = get_previous_pass_path(pwd,workflow_name)
+    
   
     os.mkdir(workflow_path)
     copy(start_path + '/WAVECAR', workflow_path)
