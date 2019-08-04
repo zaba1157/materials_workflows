@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Jul 12 13:27:40 2019
-Creates magnetic structures and vasp input including bulk relax convergence file.
+Does a FM bulk relax using MPRelaxSet with INCAR settings specified in bulk_convergence
 @author: Zach Bare
 """
 
@@ -11,45 +11,48 @@ import os
 import argparse
 from pymatgen.io.vasp.sets import MPRelaxSet,batch_write_input
 from pymatgen.io.vasp.inputs import Poscar
-#from materials_workflows.magnetism.analyzer import MagneticStructureEnumerator
-from shutil import  move
-from materials_workflows.vasp_functions import *
+from materials_workflows.vasp_functions import get_previous_pass_path, get_structure_from_pass_path, write_workflow_convergence_file
+from materials_workflows.vasp_functions import get_kpoints, write_vasp_convergence_file, workflow_is_converged
+from materials_workflows.vasp_functions import get_minimum_energy_job, move_job_to_pass_path
 from materials_workflows.vasp_convergence.convergence_inputs import bulk_convergence
 
+################################################
+
+''' Define Global Variables '''
+
+workflow_name = 'FM_MP_relax'
+
+pwd = os.getcwd()
+workflow_path = os.path.join(pwd,workflow_name)
+start_path = get_previous_pass_path(pwd,workflow_name)
+
+################################################
 
 def gen_input():
-  pwd = os.getcwd()
-  workflow_name = 'FM_MP_relax'
-  workflow_path = os.path.join(pwd,workflow_name)
+  
   os.mkdir(workflow_path)
-  structure = Poscar.from_file(os.path.join(pwd,'POSCAR')).structure
-  move(os.path.join(pwd,'POSCAR'),os.path.join(pwd,'POSCAR.orig'))
+  structure = get_structure_from_pass_path(start_path) 
   write_workflow_convergence_file(workflow_path, False)
-  #mag_structures = MagneticStructureEnumerator(structure)
   batch_write_input([structure], vasp_input_set=MPRelaxSet,
                     output_dir=workflow_path)
   for root, dirs, files in os.walk(workflow_path):
       for file in files:
-        if file == 'POSCAR':
+        if file == 'POTCAR':
           kpoints1 = get_kpoints(os.path.join(root,'POSCAR'), 300)
           kpoints2 = get_kpoints(os.path.join(root,'POSCAR'), 1000)
           natoms = len(Poscar.from_file(os.path.join(root,'POSCAR')).structure)
           convergence_writelines = bulk_convergence(kpoints1,kpoints2,natoms)
           write_vasp_convergence_file(root,convergence_writelines)
-  
+          
 def check_converged():
-  pwd = os.getcwd()
-  if workflow_is_converged(pwd) == True:
-    write_workflow_convergence_file(pwd, True)
-    job_path = get_minimum_energy_job(pwd)
-    stg_path = os.path.dirname(pwd)
-    stage_number = get_workflow_stage_number(stg_path)
-    job_to_pass = os.path.join(pwd,str(stage_number)+'_final')
-    for root, dirs, files in os.walk(job_path):
-        for file in files:
-          move(os.path.join(root,file),job_to_pass)  
+  
+  if workflow_is_converged(workflow_path) == True:
+    write_workflow_convergence_file(workflow_path, True)
+    minE_job_path = get_minimum_energy_job(workflow_path)
+    move_job_to_pass_path(pwd,minE_job_path,workflow_name)
+ 
   else:
-    write_workflow_convergence_file(pwd, False)
+    write_workflow_convergence_file(workflow_path, False)
     
     
 def rerun_task():
