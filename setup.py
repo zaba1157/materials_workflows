@@ -9,7 +9,6 @@ Created on Sun Jul 14 18:05:24 2019
 
 import os
 
-
 scripts = ['vasp_bulk_mag_relax.py', 'vasp_band_structure.py',
            'workflow_rerun.py','vasp_bulk_volume_relax.py','FM_bulk_relax.py']
 
