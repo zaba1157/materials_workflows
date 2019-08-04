@@ -2,4 +2,4 @@ Commands should be entered comma seperated with no extra spaces. File will not b
 
 Step,   Generate Inputs Command,        Check Convergence Command,      Rerun Command,  Workflow Name
 
-0,FM_bulk_relax.py -i,FM_bulk_relax.py -c,vasp_run,FM_MP_relax
+0,FM_bulk_relax.py -i,FM_bulk_relax.py -c,vasp_run,FM_bulk_relax
