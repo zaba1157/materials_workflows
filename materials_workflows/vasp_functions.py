@@ -108,13 +108,13 @@ def get_structures_from_materials_project(mpid_list, mp_key):
     
     m = MPRester(mp_key)
     structures = []
-    for mp_id in id_list:
+    for mpid in mpid_list:
 
         try:
-            structure = m.get_structures(mp_id, final=True)[0]
+            structure = m.get_structures(mpid, final=True)[0]
             structures.append(structure)
         except:
-            print('%s not a valid mp-id' % mp_id)
+            print('%s not a valid mp-id' % mpid)
 
     return structures
 
