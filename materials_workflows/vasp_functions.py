@@ -172,6 +172,20 @@ def get_unique_coordination_environment_indices(structure, env_tolerance=0):
 
     return sub_site_dict
 
+def structure_scaler(structure_list):
+    
+    for structure in structure_list:
+
+        if len(structure.species) <= 16:
+            structure.make_supercell([2, 2, 2])
+        elif len(structure.species) <= 32:
+            structure.make_supercell([2, 2, 1])
+        elif len(structure.species) <= 64:
+            structure.make_supercell([2, 1, 1])
+        else:
+            structure.make_supercell([1, 1, 1])
+     
+    return structure_list
 
 def replace(source_file_path, pattern, substring):
     fh, target_file_path = mkstemp()
