@@ -35,7 +35,7 @@ def generate_input_files(filename, mp_key, to_scale=True):
 
     batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=workflow_path,
                       make_dir_if_not_present=True)
-    append_to_incars_and_write_convergence_files(pwd, tags_to_add)
+    append_to_incars_and_write_convergence_files(pwd, tags_to_add, os.path.basename(__file__))
     write_workflow_convergence_file(workflow_path, False)
 
     return
