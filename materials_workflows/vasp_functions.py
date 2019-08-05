@@ -82,7 +82,7 @@ def get_kpoints(poscar_path, kmin):
         
     return   str(ka) + ' ' + str(kb) + ' ' + str(kc)
 
-def append_to_incars_and_write_convergence_files(workflow_path, tags_to_append):
+def append_to_incars_and_write_convergence_files(workflow_path, tags_to_append, script_name):
     
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
@@ -92,7 +92,7 @@ def append_to_incars_and_write_convergence_files(workflow_path, tags_to_append):
                         incar.write(tag + '\n')
 
                     with open(os.path.join(root, 'CONVERGENCE'), 'a') as convergence:
-                        convergence.write('0 %s\n\n' % os.path.basename(__file__))
+                        convergence.write('0 %s\n\n' % script_name.replace('.py', ''))
                         for line in incar.readlines():
                             convergence.write(line)
                         for tag in tags_to_append:
@@ -486,7 +486,7 @@ def move_job_to_pass_path(wf_command_path,final_job_path,wf_name):
         for file in files:
             if file == 'TASK_CONVERGENCE':
                 copy(os.path.join(root,file),pass_path)
-            elif 'backup' not in root:
+            else:
                 move(os.path.join(root,file),pass_path) 
     
 def rerun_job(job_type, job_name):
