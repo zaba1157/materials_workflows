@@ -101,7 +101,7 @@ def get_mpids_from_file(filename):
     except:
         print('No file with mp-ids named %s in present working directory %s' % (filename, pwd))
 
-def get_structures(mpid_list, mp_key):
+def get_structures_from_materials_project(mpid_list, mp_key):
     
     m = MPRester(mp_key)
     structures = []
@@ -115,7 +115,7 @@ def get_structures(mpid_list, mp_key):
 
     return structures
 
-def get_coord_envs(structure, env_tolerance=0):
+def get_unique_coordination_environment_indices(structure, env_tolerance=0):
 
     ''' Identifies the unique coordination environments of atoms in a pymatgen.core.structure.Structure object '''
     ''' env_tolerance sets the tolerance at which sites are considered different: default is 0 '''
