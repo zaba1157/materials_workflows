@@ -8,11 +8,13 @@ Created on Sun Jul 14 18:05:24 2019
 # makes the scripts listed executable
 
 import os
+from pathlib import Path
 
-scripts = [script for script in os.listdir('.') if os.path.isfile(script)] # list of all files in present directory, including setup.py
+scripts = [script for script in os.listdir('.') if os.path.isfile(script) and Path(script).suffix == '.py']
 
+'''
 if str(os.environ["VASP_COMPUTER"]) == 'summit':
     scripts.append('vasp.py')
-    
+'''    
 for s in scripts:
     os.system('chmod 755 '+s)
