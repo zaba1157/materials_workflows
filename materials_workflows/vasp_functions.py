@@ -134,7 +134,7 @@ def get_structures_from_materials_project(mpid_list, mp_key):
             structure = m.get_structures(mpid, final=True)[0]
             structures.append(structure)
         except:
-            print('%s not a valid mp-id' % mpid)
+            print('%s not a valid mp-id OR %s is not a valid API key' % (mpid, mp_key))
 
     return structures
 
