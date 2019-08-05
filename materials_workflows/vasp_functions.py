@@ -8,6 +8,9 @@ Created on Tue Jun 18 21:11:04 2019
 import os
 import json
 from pymatgen.io.vasp.outputs import Vasprun
+from pymatgen.core.periodic_table import Element
+from pymatgen.analysis.local_env import CrystalNN
+from pymatgen.ext.matproj import MPRester
 from tempfile import mkstemp
 from shutil import move,copy
 from os import remove
