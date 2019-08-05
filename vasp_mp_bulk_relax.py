@@ -24,34 +24,35 @@ def generate_input_files(filename, mp_key, to_scale=True):
     if os.path.isdir(workflow_path) == False:
         os.mkdir(workflow_path)
 
-    try:
-        id_list = get_mpids_from_file(os.path.join(pwd, filename), mp_key)
-        structures = get_structures_from_materials_project(id_list)
-    except:
-        print('Specify mp_key variable in ''' Define Global Variables ''' section of vasp_mp_bulk_relax')
-        
+    id_list = get_mpids_from_file(os.path.join(pwd, filename))
+    structures = get_structures_from_materials_project(id_list, mp_key)
+
     if to_scale == True:
         scaled_structures = structure_scaler(structures) # resizes structure to compare with o-vacancy calculations
     else:
         scaled_structures = structures
-        
+
     batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=workflow_path,
                       make_dir_if_not_present=True)
+
+    tags_to_add = ['NPAR = 2', 'ISYM = 0'] # specifies additional tags to add to the INCAR file
 
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
             if file == 'INCAR':
-                incar = open(os.path.join(dir, 'INCAR'), "r+")
-                incar.write('NPAR = 2\n') # set to run on two cores
-                incar.write('ISYM = 0\n') # removes symmetry from INCAR
-                lines = incar.readlines()
-                incar.close()
-                
-                with open(os.path.join(dir, 'CONVERGENCE'), 'a') as convergence:
-                    convergence.write('0 MP_Bulk_Converge\n\n')
-                    for line in lines:
-                        convergence.write(line)
-                convergence.close()
+                with open(os.path.join(root, 'INCAR'), "r+") as incar:
+                    for tag in tags_to_add:
+                        incar.write(tag + '\n')
+
+                    with open(os.path.join(root, 'CONVERGENCE'), 'a') as convergence:
+                        convergence.write('0 MP_Bulk_Converge\n\n')
+                        for line in incar.readlines():
+                            convergence.write(line)
+                        for tag in tags_to_add:
+                            convergence.write(tag + '\n')
+
+                        convergence.close()
+                    incar.close()
 
     write_workflow_convergence_file(workflow_path, False)
 
