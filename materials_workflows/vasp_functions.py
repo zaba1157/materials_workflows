@@ -192,6 +192,25 @@ def get_unique_coordination_environment_indices(structure, env_tolerance=0):
 
     return sub_site_dict
 
+def get_structures_with_element_removed(workflow_path, element, structure):
+    
+    sub_site_dict = get_coord_envs(structure)
+    structure_list = []
+    
+    for key in list(sub_site_dict.keys()):
+        if sub_site_dict[key][0] == Element(element):
+            structure_copy = structure.copy()
+            compound_parent_directory = str(structure_copy.formula).replace(' ', '_')
+            compound_path = os.path.join(workflow_path, compound_parent_directory)
+
+            if os.path.isdir(compound_path) == False:
+                os.mkdir(compound_path)
+
+            structure_copy.remove_sites([sub_site_dict[key][1]])
+            structure_list.append(structure_copy)
+    
+    return structure_list, compound_path     
+
 def structure_scaler(structure_list):
     
     for structure in structure_list:
