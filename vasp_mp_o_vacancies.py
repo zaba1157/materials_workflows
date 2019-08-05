@@ -37,7 +37,7 @@ def generate_input_files(filename, mp_key, to_scale=True):
     
     for structure in scaled_structures:
         structure_list, compound_path = get_structures_with_element_removed(workflow_path, 'O', structure)
-        batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=compound_path,
+        batch_write_input(structure_list, vasp_input_set=MPRelaxSet, output_dir=compound_path,
                           make_dir_if_not_present=True)
                           
     append_to_incars_and_write_convergence_files(pwd, tags_to_add, os.path.basename(__file__))
