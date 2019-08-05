@@ -82,7 +82,7 @@ def get_kpoints(poscar_path, kmin):
         
     return   str(ka) + ' ' + str(kb) + ' ' + str(kc)
 
-def append_to_incar_and_write_convergence_file(workflow_path, tags_to_append):
+def append_to_incars_and_write_convergence_files(workflow_path, tags_to_append):
     
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
