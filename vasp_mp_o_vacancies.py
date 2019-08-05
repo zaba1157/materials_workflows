@@ -36,7 +36,7 @@ def generate_input_files(filename, mp_key, to_scale=True):
         scaled_structures = structures # for just regular bulk relaxations of Materials Project structures
     
     for structure in scaled_structures:
-        structure_list, compound_path = get_structures_with_element_removed(pwd, 'O', structure)
+        structure_list, compound_path = get_structures_with_element_removed(workflow_path, 'O', structure)
         batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=compound_path,
                           make_dir_if_not_present=True)
                           
