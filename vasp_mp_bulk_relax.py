@@ -6,7 +6,7 @@ import os
 import argparse
 from materials_workflows.vasp_functions import write_workflow_convergence_file, workflow_is_converged
 from materials_workflows.vasp_functions import get_mpids_from_file, get_structures_from_materials_project
-from materials_workflows.vasp_functions import structure_scaler
+from materials_workflows.vasp_functions import structure_scaler, append_to_incar_and_write_convergence_file
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 
 ################################################
@@ -17,6 +17,7 @@ workflow_name = 'bulk'
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 mp_key = '' # user-specified Materials Project API key
+tags_to_add = ['NPAR = 2', 'ISYM = 0'] # tags to add to all INCAR files generated
 ################################################
 
 def generate_input_files(filename, mp_key, to_scale=True):
@@ -30,30 +31,11 @@ def generate_input_files(filename, mp_key, to_scale=True):
     if to_scale == True:
         scaled_structures = structure_scaler(structures) # resizes structure to compare with o-vacancy calculations
     else:
-        scaled_structures = structures
+        scaled_structures = structures # for just regular bulk relaxations of Materials Project structures
 
     batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=workflow_path,
                       make_dir_if_not_present=True)
-
-    tags_to_add = ['NPAR = 2', 'ISYM = 0'] # specifies additional tags to add to the INCAR file
-
-    for root, dirs, files in os.walk(workflow_path):
-        for file in files:
-            if file == 'INCAR':
-                with open(os.path.join(root, 'INCAR'), "r+") as incar:
-                    for tag in tags_to_add:
-                        incar.write(tag + '\n')
-
-                    with open(os.path.join(root, 'CONVERGENCE'), 'a') as convergence:
-                        convergence.write('0 MP_Bulk_Converge\n\n')
-                        for line in incar.readlines():
-                            convergence.write(line)
-                        for tag in tags_to_add:
-                            convergence.write(tag + '\n')
-
-                        convergence.close()
-                    incar.close()
-
+    append_to_incars_and_write_convergence_files(pwd, tags_to_add)
     write_workflow_convergence_file(workflow_path, False)
 
     return
@@ -81,7 +63,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.gen_inputs:
-        generate_input_files('MPIDS', mp_key) # name of the file containing mp-ids and Materials Project API key
+        generate_input_files('MPIDS', mp_key, to_scale=True) # name of the file containing mp-ids and Materials Project API key
     elif args.converged:
         check_converged()
     else:
