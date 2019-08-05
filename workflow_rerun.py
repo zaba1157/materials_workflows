@@ -37,8 +37,10 @@ def default_nameing(path):
     struct = Poscar.from_file(os.path.join(path,'POSCAR')).structure
     formula = str(struct.composition.reduced_formula)
     directories = path.split(os.sep)
-  
-    return formula+'-'+directories[-2]+'-'+directories[-1]
+    name = formula+'-'+directories[-2]+'-'+directories[-1]
+    name.replace("(",'')
+    name.replace(")",'')
+    return name
 
 
 def jobs_in_queue():
@@ -208,6 +210,8 @@ def default_workflow_nameing(pwd, workflow_stage_name):
                         name =  str(formula+'-'+directories[-1]+'-'+workflow_stage_name)
                     elif workflow_stage_name == directories[-1]:
                         name = str(formula+'-'+workflow_stage_name)
+                    name.replace("(",'')
+                    name.replace(")",'')
                     replace_incar_tags(rt,'SYSTEM', name)
 
 def vasp_run_main(pwd):
