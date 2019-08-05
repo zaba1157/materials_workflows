@@ -35,7 +35,7 @@ def get_incar_value(path, tag):
 
 def default_nameing(path):
     struct = Poscar.from_file(os.path.join(path,'POSCAR')).structure
-    formula = str(struct.composition.reduced_formula)
+    formula = str(struct.composition.formula).replace(' ', '')
     directories = path.split(os.sep)
     name = formula+'-'+directories[-2]+'-'+directories[-1]
     name.replace("(",'')
@@ -202,7 +202,7 @@ def default_workflow_nameing(pwd, workflow_stage_name):
         for fle in fs:
             if fle == 'POTCAR' and check_vasp_input(rt) == True:
                     struct = Poscar.from_file(os.path.join(rt,'POSCAR')).structure
-                    formula = struct.composition.reduced_formula
+                    formula = str(struct.composition.formula).replace(' ', '')
                     directories = rt.split(os.sep)
                     if workflow_stage_name != directories[-2] and workflow_stage_name != directories[-1]: 
                         name =  str(formula+'-'+directories[-1]+'-'+directories[-2]+'-'+workflow_stage_name)                      
