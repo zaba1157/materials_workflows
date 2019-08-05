@@ -100,7 +100,7 @@ def get_incar_value(path, tag):
 
 def default_nameing(path):
     struct = Poscar.from_file(os.path.join(path,'POSCAR')).structure
-    formula = str(struct.composition.reduced_formula)
+    formula = str(struct.composition.formula).replace(' ', '')
     directories = path.split(os.sep)
   
     return formula+'-'+directories[-2]+'-'+directories[-1]
