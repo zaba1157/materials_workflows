@@ -9,8 +9,7 @@ Created on Sun Jul 14 18:05:24 2019
 
 import os
 
-scripts = ['vasp_bulk_mag_relax.py', 'vasp_band_structure.py',
-           'workflow_rerun.py','FM_bulk_relax.py']
+scripts = [script for script in os.listdir('.') if os.path.isfile(script)] # list of all files in present directory, including setup.py
 
 if str(os.environ["VASP_COMPUTER"]) == 'summit':
     scripts.append('vasp.py')
