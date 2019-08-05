@@ -388,7 +388,7 @@ def get_minimum_energy_job(pwd):
                     if E_per_atom < min_energy:
                         min_energy = E_per_atom
                         job_path = root
-    return root                    
+    return job_path                    
     
 def get_workflow_stage_number(pwd):
     workflow_stage = Incar().from_file(os.path.join(pwd,'WORKFLOW_STAGE'))
