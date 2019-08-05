@@ -6,7 +6,7 @@ import os
 import argparse
 from materials_workflows.vasp_functions import write_workflow_convergence_file, workflow_is_converged
 from materials_workflows.vasp_functions import get_mpids_from_file, get_structures_from_materials_project
-from materials_workflows.vasp_functions import structure_scaler, append_to_incar_and_write_convergence_file
+from materials_workflows.vasp_functions import structure_scaler, append_to_incars_and_write_convergence_files
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 
 ################################################
