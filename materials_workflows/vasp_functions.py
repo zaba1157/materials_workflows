@@ -79,6 +79,97 @@ def get_kpoints(poscar_path, kmin):
         
     return   str(ka) + ' ' + str(kb) + ' ' + str(kc)
 
+def get_mpids_from_file(filename):
+     
+    try:
+        all_entries = []
+        pwd = os.getcwd()
+        with open(os.path.join(pwd, filename)) as f: # The name of the mpid file in the present working directory
+            lines = f.read().splitlines()
+        for line in lines:
+            all_entries.append(line.split())
+    
+        flattened_entries = [entry for entries_list in all_entries for entry in entries_list]
+        for string in flattened_entries:
+            if 'mp-' in string: # mp-id check
+                continue
+            else:
+                flattened_entries.remove(string)
+    
+        return flattened_entries
+    
+    except:
+        print('No file with mp-ids named %s in present working directory %s' % (filename, pwd))
+
+def get_structures(mpid_list, mp_key):
+    
+    m = MPRester(mp_key)
+    structures = []
+    for mp_id in id_list:
+
+        try:
+            structure = m.get_structures(mp_id, final=True)[0]
+            structures.append(structure)
+        except:
+            print('%s not a valid mp-id' % mp_id)
+
+    return structures
+
+def get_coord_envs(structure, env_tolerance=0):
+
+    ''' Identifies the unique coordination environments of atoms in a pymatgen.core.structure.Structure object '''
+    ''' env_tolerance sets the tolerance at which sites are considered different: default is 0 '''
+    ''' Returns sub_site_dict dictionary of a single unique site: key format '%element_site_%site_number' '''
+    ''' Each key has a tuple value of (<enum 'Element'> object from pmg, site index) '''
+
+    structure.add_oxidation_state_by_guess() #adds oxidation guess to a structure
+    unique_species = np.unique(structure.species) #returns the unique species in the structure
+    coord_envs = np.zeros((len(structure.species), len(unique_species))) #builds array to house coordination envs
+
+    unique_sites = []
+    site_counter = np.ones(len(unique_species))
+    sites_dict = {} #contains all the equivalent substitution sites in arrays
+    sub_site_dict = {} #contains only the first substitution site in the sites_dict array
+
+    cnn = CrystalNN(weighted_cn=True)
+    for i in range(len(structure.sites)):
+        cnn_structure = cnn.get_nn_info(structure, i)
+        for j in range(len(cnn_structure)):
+            site = cnn_structure[j]['site']
+            for specie in unique_species:
+                if site.specie == specie:
+                    el_ind = int(np.where(unique_species == specie)[0])
+                    coord_envs[i][el_ind] += cnn_structure[j]['weight']
+
+    for i in range(len(coord_envs)):
+        duplicate_sites = []
+        for j in range(len(coord_envs)):
+            if np.linalg.norm(coord_envs[i]-coord_envs[j]) <= env_tolerance:
+                duplicate_sites.append(i)
+                duplicate_sites.append(j)
+        one_unique = list(np.unique(duplicate_sites))
+        if one_unique not in [x for x in unique_sites]:
+            unique_sites.append(one_unique)
+
+    for i in range(len(unique_sites)):
+        species = []
+        for j in range(len(unique_sites[i])):
+            species.append(structure.species[unique_sites[i][j]])
+
+        if len(np.unique(species)) == 1: #only a single element in the group of coordination environments
+            specie = np.unique(species)[0]
+            site_index = np.where(unique_species == specie)
+            key = '%s_site_%s' % (str(specie.element), int(site_counter[site_index]))
+            sites_dict[key] = (specie.element, unique_sites[i])
+            sub_site_dict[key] = (specie.element, unique_sites[i][0]) #pick the first equivalent site
+            site_counter[site_index] += 1
+        else:
+            raise Exception('Coordination environments similar w/in tolerance, but species %s are not' % np.unique(species))
+            # should be a very rare exception when weighted_cn=True in CrystalNN, unless threshold is high
+
+    return sub_site_dict
+
+
 def replace(source_file_path, pattern, substring):
     fh, target_file_path = mkstemp()
     with open(target_file_path, 'w') as target_file:
