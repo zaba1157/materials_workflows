@@ -82,6 +82,26 @@ def get_kpoints(poscar_path, kmin):
         
     return   str(ka) + ' ' + str(kb) + ' ' + str(kc)
 
+def append_to_incar_and_write_convergence_file(workflow_path, tags_to_append):
+    
+    for root, dirs, files in os.walk(workflow_path):
+        for file in files:
+            if file == 'INCAR':
+                with open(os.path.join(root, 'INCAR'), "r+") as incar:
+                    for tag in tags_to_append:
+                        incar.write(tag + '\n')
+
+                    with open(os.path.join(root, 'CONVERGENCE'), 'a') as convergence:
+                        convergence.write('0 %s\n\n' % os.path.basename(__file__))
+                        for line in incar.readlines():
+                            convergence.write(line)
+                        for tag in tags_to_append:
+                            convergence.write(tag + '\n')
+
+                        convergence.close()
+                    incar.close()
+    return
+
 def get_mpids_from_file(filename):
      
     try:
