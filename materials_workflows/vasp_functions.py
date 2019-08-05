@@ -194,7 +194,7 @@ def get_unique_coordination_environment_indices(structure, env_tolerance=0):
 
 def get_structures_with_element_removed(workflow_path, element, structure):
     
-    sub_site_dict = get_coord_envs(structure)
+    sub_site_dict = get_unique_coordination_environment_indices(structure)
     structure_list = []
     
     for key in list(sub_site_dict.keys()):
