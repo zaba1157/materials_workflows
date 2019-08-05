@@ -14,6 +14,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 ''' Define Global Variables '''
 
 workflow_name = 'bulk'
+mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory 
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 mp_key = '' # user-specified Materials Project API key
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.gen_inputs:
-        generate_input_files('MPIDS', mp_key, to_scale=True) # name of the file containing mp-ids and Materials Project API key
+        generate_input_files(mpids_filename, mp_key, to_scale=True) # name of the file containing mp-ids and Materials Project API key
     elif args.converged:
         check_converged()
     else:
