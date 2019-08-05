@@ -486,7 +486,7 @@ def move_job_to_pass_path(wf_command_path,final_job_path,wf_name):
         for file in files:
             if file == 'TASK_CONVERGENCE':
                 copy(os.path.join(root,file),pass_path)
-            else:
+            elif 'backup' not in root:
                 move(os.path.join(root,file),pass_path) 
     
 def rerun_job(job_type, job_name):
