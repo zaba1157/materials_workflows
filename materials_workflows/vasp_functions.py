@@ -200,7 +200,7 @@ def get_structures_with_element_removed(workflow_path, element, structure):
     for key in list(sub_site_dict.keys()):
         if sub_site_dict[key][0] == Element(element):
             structure_copy = structure.copy()
-            compound_parent_directory = str(structure_copy.formula).replace(' ', '_')
+            compound_parent_directory = str(structure_copy.formula).replace(' ', '')
             compound_path = os.path.join(workflow_path, compound_parent_directory)
 
             if os.path.isdir(compound_path) == False:
