@@ -1,0 +1,5 @@
+Commands should be entered comma seperated with no extra spaces. File will not be parsed correctly if this is not done!
+
+Step,   Generate Inputs Command,        Check Convergence Command,      Rerun Command,  Workflow Name
+
+0,vasp_mp_o_vacancies.py -i,vasp_mp_o_vacancies.py -c,vasp_run,o_vacancies
