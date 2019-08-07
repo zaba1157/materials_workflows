@@ -241,6 +241,7 @@ def check_magnetism(path, structure):
     if not analyzer.is_magnetic:
         wf_cmds_path = os.path.join(path, 'WORKFLOW_COMMANDS')
         replace(wf_cmds_path, 'vasp_bulk_mag_relax.py', 'FM_bulk_relax.py')
+        replace(wf_cmds_path, 'bulk_mag', 'FM_bulk_relax')
         os.system('FM_bulk_relax.py -i')
         return False
     return True  
