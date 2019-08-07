@@ -235,6 +235,16 @@ def replace(source_file_path, pattern, substring):
     remove(source_file_path)
     move(target_file_path, source_file_path)
     
+from materials_workflows.magnetism.analyzer import CollinearMagneticStructureAnalyzer    
+def check_magnetism(path, structure):
+    analyzer = CollinearMagneticStructureAnalyzer(structure)
+    if not analyzer.is_magnetic:
+        wf_cmds_path = os.path.join(path, 'WORKFLOW_COMMANDS')
+        replace(wf_cmds_path, 'vasp_bulk_mag_relax.py', 'FM_bulk_relax.py')
+        os.system('FM_bulk_relax.py -i')
+        return False
+    return True  
+
 def replace_incar_tags(path, tag, value):
     incar = Incar().from_file(os.path.join(path,'INCAR'))
     incar.__setitem__(tag,value)
@@ -251,7 +261,6 @@ def default_nameing(path):
     directories = path.split(os.sep)
   
     return formula+'-'+directories[-2]+'-'+directories[-1]
-
 
 def jobs_in_queue():
     p = subprocess.Popen(['squeue' ,'-o', '"%Z %T"'],   #can be user specific, add -u username 
