@@ -11,6 +11,7 @@ import os
 import argparse
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 from materials_workflows.magnetism.analyzer import MagneticStructureEnumerator
+from materials_workflows.vasp_functions import get_mpids_from_file, get_structures_from_materials_project
 from materials_workflows.vasp_functions import get_previous_pass_path, get_structure_from_pass_path, write_workflow_convergence_file
 from materials_workflows.vasp_functions import get_kpoints, write_vasp_convergence_file, workflow_is_converged
 from materials_workflows.vasp_functions import get_minimum_energy_job, move_job_to_pass_path
