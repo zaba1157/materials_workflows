@@ -29,11 +29,12 @@ start_path = get_previous_pass_path(pwd,workflow_name)
 ################################################
 
 def gen_input():
-  
+  max_num_mag_structs = 20
   os.mkdir(workflow_path)
   structure = get_structure_from_pass_path(start_path) 
   write_workflow_convergence_file(workflow_path, False)
   mag_structures = MagneticStructureEnumerator(structure)
+  mag_structures = mag_structures[:max_num_mag_structs]
   batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
                     output_dir=workflow_path)
   for root, dirs, files in os.walk(workflow_path):
