@@ -237,7 +237,7 @@ def replace(source_file_path, pattern, substring):
     
 from materials_workflows.magnetism.analyzer import CollinearMagneticStructureAnalyzer    
 def check_magnetism(path, structure):
-    analyzer = CollinearMagneticStructureAnalyzer(structure)
+    analyzer = CollinearMagneticStructureAnalyzer(structure, overwrite_magmom_mode="replace_all")
     if not analyzer.is_magnetic:
         wf_cmds_path = os.path.join(path, 'WORKFLOW_COMMANDS')
         replace(wf_cmds_path, 'vasp_bulk_mag_relax.py', 'FM_bulk_relax.py')
