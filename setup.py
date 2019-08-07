@@ -9,6 +9,8 @@ Created on Sun Jul 14 18:05:24 2019
 import os
 from pathlib import Path
 
+if str(os.environ["VASP_COMPUTER"]) != 'summit':
+    os.remove('vasp.py')
 scripts = [script for script in os.listdir('.') if os.path.isfile(script) and Path(script).suffix == '.py']
 
 for s in scripts:
