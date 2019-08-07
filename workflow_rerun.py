@@ -409,7 +409,7 @@ def workflow_progress(top_dir):
             if check_wf_cmds_for_nonVASP_cals(root) == True:
                 other_calculators_in_workflow = True
                 
-            if os.path.exists(os.path.join(root,'WORKFLOW_STAGE')) == False: # workflow Init
+            if os.path.exists(os.path.join(root,'0_Init')) == False: # workflow Init
                 initialize_workflow(root)                                                                     
             
             elif wf_task_is_converged(root) == True:              
