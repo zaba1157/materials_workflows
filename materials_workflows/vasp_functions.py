@@ -235,16 +235,27 @@ def replace(source_file_path, pattern, substring):
     remove(source_file_path)
     move(target_file_path, source_file_path)
     
-from materials_workflows.magnetism.analyzer import CollinearMagneticStructureAnalyzer    
+#from materials_workflows.magnetism.analyzer import CollinearMagneticStructureAnalyzer    
 def check_magnetism(path, structure):
-    analyzer = CollinearMagneticStructureAnalyzer(structure, overwrite_magmom_mode="replace_all")
-    if not analyzer.is_magnetic:
+    st_dic = structure.as_dict()
+    mag_els = mag_species()
+    if all([ s['label'] not in mag_els and get_el_from_ion(s['label']) not in mag_els for s in st_dic['sites'] ]):
+    #    analyzer = CollinearMagneticStructureAnalyzer(structure, overwrite_magmom_mode="replace_all")
+    #    if not analyzer.is_magnetic:
         wf_cmds_path = os.path.join(path, 'WORKFLOW_COMMANDS')
         replace(wf_cmds_path, 'vasp_bulk_mag_relax.py', 'FM_bulk_relax.py')
         replace(wf_cmds_path, 'bulk_mag', 'FM_bulk_relax')
         os.system('FM_bulk_relax.py -i')
         return False
     return True  
+
+import re
+def get_el_from_ion(ion):
+    return " ".join(re.findall("[a-zA-Z]+", ion))
+
+def mag_species():
+    return [ 'Ce', 'Ce3+', 'Co', 'Co3+', 'Co4+', 'Cr', 'Dy3+', 'Er3+', 'Eu', 'Eu2+', 'Eu3+', 'Fe', 'Gd3+', 'Ho3+', 'La3+',
+             'Lu3+', 'Mn', 'Mn3+', 'Mn4+', 'Mo', 'Nd3+', 'Ni', 'Pm3+', 'Pr3+', 'Sm3+', 'Tb3+', 'Tm3+', 'V', 'W', 'Yb3+'  ]
 
 def replace_incar_tags(path, tag, value):
     incar = Incar().from_file(os.path.join(path,'INCAR'))
