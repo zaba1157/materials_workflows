@@ -87,7 +87,7 @@ def append_to_incars(workflow_path, tags_to_append):
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
             if file == 'INCAR':
-                with open(os.path.join(root, 'INCAR'), "r+") as incar:
+                with open(os.path.join(root, 'INCAR'), "a") as incar:
                     for tag in tags_to_append:
                         incar.write(tag + '\n')
                     incar.close()
