@@ -82,6 +82,17 @@ def get_kpoints(poscar_path, kmin):
         
     return   str(ka) + ' ' + str(kb) + ' ' + str(kc)
 
+def append_to_incars(workflow_path, tags_to_append):
+    
+    for root, dirs, files in os.walk(workflow_path):
+        for file in files:
+            if file == 'INCAR':
+                with open(os.path.join(root, 'INCAR'), "r+") as incar:
+                    for tag in tags_to_append:
+                        incar.write(tag + '\n')
+                    incar.close()
+    return
+
 def append_to_incars_and_write_convergence_files(workflow_path, tags_to_append, script_name):
     
     for root, dirs, files in os.walk(workflow_path):
