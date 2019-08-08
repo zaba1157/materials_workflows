@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Jul 12 13:27:40 2019
-Creates magnetic structures and vasp input including bulk relax convergence file.
-@author: Zach Bare
-"""
-
 
 import os
 import argparse
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
+from pymatgen.io.vasp.inputs import Poscar
 from materials_workflows.magnetism.analyzer import MagneticStructureEnumerator
 from materials_workflows.vasp_functions import get_mpids_from_file, get_structures_from_materials_project
 from materials_workflows.vasp_functions import get_previous_pass_path, get_structure_from_pass_path, write_workflow_convergence_file
@@ -21,10 +16,11 @@ from materials_workflows.vasp_convergence.convergence_inputs import bulk_converg
 ''' Define Global Variables '''
 
 workflow_name = 'bulk_mag'
-mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory 
+mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 mp_key = '' # user-specified Materials Project API key
+max_num_mag_structs = 20 # set the maximum number of magnetic samples
 ################################################
 
 def generate_input_files(filename, mp_key):
@@ -40,36 +36,36 @@ def generate_input_files(filename, mp_key):
         compound_path = os.path.join(workflow_path, compound_parent_directory)
         if os.path.isdir(compound_path) == False:
                 os.mkdir(compound_path)
-                
-        mag_structures_list = MagneticStructureEnumerator(structure)
-        batch_write_input(mag_structures_list, vasp_input_set=MPRelaxSet, output_dir=compound_path,
+
+        mag_structures_obj = MagneticStructureEnumerator(structure)
+        ordered_structures = mag_structures_obj.ordered_structures[:max_num_mag_structs]
+        batch_write_input(ordered_structures, vasp_input_set=MPRelaxSet, output_dir=compound_path,
                           make_dir_if_not_present=True)
-    
+
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
             if file == 'POTCAR':
-                kpoints1 = get_kpoints(os.path.join(root,'POSCAR'), 300)
-                kpoints2 = get_kpoints(os.path.join(root,'POSCAR'), 1000)
-                natoms = len(Poscar.from_file(os.path.join(root,'POSCAR')).structure)
-                convergence_writelines = bulk_convergence(kpoints1,kpoints2,natoms)
-                write_vasp_convergence_file(root,convergence_writelines)
-    
-    append_to_incars_and_write_convergence_files(pwd, tags_to_add, os.path.basename(__file__))
+                kpoints1 = get_kpoints(os.path.join(root, 'POSCAR'), 300)
+                kpoints2 = get_kpoints(os.path.join(root, 'POSCAR'), 1000)
+                natoms = len(Poscar.from_file(os.path.join(root, 'POSCAR')).structure)
+                convergence_writelines = bulk_convergence(kpoints1, kpoints2, natoms)
+                write_vasp_convergence_file(root, convergence_writelines)
+
     write_workflow_convergence_file(workflow_path, False)
 
     return
-  
+
 def check_converged():
-  
+
     if workflow_is_converged(workflow_path) == True:
         write_workflow_convergence_file(workflow_path, True)
         minE_job_path = get_minimum_energy_job(workflow_path)
         move_job_to_pass_path(pwd,minE_job_path,workflow_name)
- 
+
     else:
         write_workflow_convergence_file(workflow_path, False)
-    
-    
+
+
 def rerun_task():
     #only needed for non-VASP calculations
     pass
@@ -84,7 +80,7 @@ if __name__ == '__main__':
       parser.add_argument('-r', '--rerun', help='Reruns worklow. This does nothing if vasp workflow.',
                           action='store_true')
       args = parser.parse_args()
-    
+
       if args.gen_inputs:
           generate_input_files(mpids_filename, mp_key)
       elif args.converged:
