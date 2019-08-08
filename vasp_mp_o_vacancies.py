@@ -8,7 +8,8 @@ from pymatgen.io.vasp.inputs import Poscar
 from materials_workflows.vasp_functions import write_workflow_convergence_file, workflow_is_converged
 from materials_workflows.vasp_functions import get_mpids_from_file, get_structures_from_materials_project
 from materials_workflows.vasp_functions import structure_scaler, append_to_incars, get_kpoints
-from materials_workflows.vasp_functions import get_structures_with_element_removed, convergence_writelines
+from materials_workflows.vasp_functions import get_structures_with_element_removed
+from materials_workflows.vasp_convergence.convergence_inputs import bulk_convergence
 from materials_workflows.vasp_functions import write_vasp_convergence_file
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 
@@ -17,7 +18,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 ''' Define Global Variables '''
 
 workflow_name = 'o_vacancies'
-mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory 
+mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 mp_key = '' # user-specified Materials Project API key
@@ -36,14 +37,14 @@ def generate_input_files(filename, mp_key, to_scale=True):
         scaled_structures = structure_scaler(structures) # resizes structure to compare with o-vacancy calculations
     else:
         scaled_structures = structures # for just regular bulk relaxations of Materials Project structures
-    
+
     for structure in scaled_structures:
         structure_list, compound_path = get_structures_with_element_removed(workflow_path, 'O', structure)
         batch_write_input(structure_list, vasp_input_set=MPRelaxSet, output_dir=compound_path,
                           make_dir_if_not_present=True)
-                          
+
     append_to_incars(pwd, tags_to_add)
-    
+
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
             if file == 'POTCAR':
@@ -52,7 +53,7 @@ def generate_input_files(filename, mp_key, to_scale=True):
                 natoms = len(Poscar.from_file(os.path.join(root, 'POSCAR')).structure)
                 convergence_writelines = bulk_convergence(kpoints1, kpoints2, natoms)
                 write_vasp_convergence_file(root, convergence_writelines)
-                
+
     write_workflow_convergence_file(workflow_path, False)
 
     return
