@@ -8,6 +8,8 @@ from pymatgen.io.vasp.inputs import Poscar
 from materials_workflows.vasp_functions import write_workflow_convergence_file, workflow_is_converged
 from materials_workflows.vasp_functions import get_mpids_from_file, get_structures_from_materials_project
 from materials_workflows.vasp_functions import structure_scaler, append_to_incars
+from materials_workflows.vasp_functions import get_kpoints, write_vasp_convergence_file
+from materials_workflows.vasp_convergence.convergence_inputs import bulk_convergence
 from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 
 ################################################
@@ -15,10 +17,10 @@ from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 ''' Define Global Variables '''
 
 workflow_name = 'bulk'
-mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory 
+mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
-mp_key = '' # user-specified Materials Project API key
+mp_key = 'diPAM4AHoKwSLNfS1B' # user-specified Materials Project API key
 tags_to_add = ['NPAR = 2', 'ISYM = 0'] # tags to add to all INCAR files generated
 ################################################
 
@@ -38,7 +40,7 @@ def generate_input_files(filename, mp_key, to_scale=True):
     batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=workflow_path,
                       make_dir_if_not_present=True)
     append_to_incars(pwd, tags_to_add)
-    
+
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
             if file == 'POTCAR':
@@ -47,7 +49,7 @@ def generate_input_files(filename, mp_key, to_scale=True):
                 natoms = len(Poscar.from_file(os.path.join(root, 'POSCAR')).structure)
                 convergence_writelines = bulk_convergence(kpoints1, kpoints2, natoms)
                 write_vasp_convergence_file(root,convergence_writelines)
-    
+
     write_workflow_convergence_file(workflow_path, False)
 
     return
@@ -80,3 +82,4 @@ if __name__ == '__main__':
         check_converged()
     else:
         rerun_task()
+
