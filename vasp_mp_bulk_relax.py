@@ -37,6 +37,7 @@ def generate_input_files(filename, mp_key, to_scale=True):
 
     batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=workflow_path,
                       make_dir_if_not_present=True)
+    append_to_incars(pwd, tags_to_add)
     
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
@@ -47,7 +48,6 @@ def generate_input_files(filename, mp_key, to_scale=True):
                 convergence_writelines = bulk_convergence(kpoints1, kpoints2, natoms)
                 write_vasp_convergence_file(root,convergence_writelines)
     
-    append_to_incars(pwd, tags_to_add)
     write_workflow_convergence_file(workflow_path, False)
 
     return
