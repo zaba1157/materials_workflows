@@ -20,7 +20,7 @@ workflow_name = 'bulk'
 mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
-mp_key = 'diPAM4AHoKwSLNfS1B' # user-specified Materials Project API key
+mp_key = '' # user-specified Materials Project API key
 tags_to_add = ['NPAR = 2', 'ISYM = 0'] # tags to add to all INCAR files generated
 ################################################
 
