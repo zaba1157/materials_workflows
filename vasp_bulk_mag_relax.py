@@ -40,8 +40,8 @@ def gen_input():
       os.mkdir(workflow_path)  
       write_workflow_convergence_file(workflow_path, False)
       mag_structures = MagneticStructureEnumerator(structure)
-      mag_structures = mag_structures[:max_num_mag_structs]
-      batch_write_input(mag_structures.ordered_structures, vasp_input_set=MPRelaxSet,
+      ordered_structures = mag_structures.ordered_structures[:max_num_mag_structs]
+      batch_write_input(ordered_structures, vasp_input_set=MPRelaxSet,
                         output_dir=workflow_path)
       for root, dirs, files in os.walk(workflow_path):
           for file in files:
