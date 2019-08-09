@@ -16,7 +16,8 @@ from materials_workflows.vasp_convergence.convergence_inputs import bulk_converg
 ''' Define Global Variables '''
 
 workflow_name = 'bulk_mag'
-mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory
+mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be in the same directory AND should all be magnetic
+# if not all mp-ids are magnetic, the folder
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 mp_key = '' # user-specified Materials Project API key
@@ -32,15 +33,21 @@ def generate_input_files(filename, mp_key):
     structures = get_structures_from_materials_project(id_list, mp_key)
 
     for structure in structures:
-        compound_parent_directory = str(structure.formula).replace(' ', '')
-        compound_path = os.path.join(workflow_path, compound_parent_directory)
-        if os.path.isdir(compound_path) == False:
+        try:
+            mag_structures_obj = MagneticStructureEnumerator(structure)
+            ordered_structures = mag_structures_obj.ordered_structures[:max_num_mag_structs]
+        
+            compound_parent_directory = str(structure.formula).replace(' ', '')
+            compound_path = os.path.join(workflow_path, compound_parent_directory)
+            
+            if os.path.isdir(compound_path) == False:
                 os.mkdir(compound_path)
 
-        mag_structures_obj = MagneticStructureEnumerator(structure)
-        ordered_structures = mag_structures_obj.ordered_structures[:max_num_mag_structs]
-        batch_write_input(ordered_structures, vasp_input_set=MPRelaxSet, output_dir=compound_path,
+            batch_write_input(ordered_structures, vasp_input_set=MPRelaxSet, output_dir=compound_path,
                           make_dir_if_not_present=True)
+        except:
+            print('%s is not magnetic!' % str(structure.formula).replace(' ', ''))
+            continue
 
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
