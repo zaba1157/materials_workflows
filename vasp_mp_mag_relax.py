@@ -9,7 +9,7 @@ from materials_workflows.magnetism.analyzer import MagneticStructureEnumerator
 from materials_workflows.vasp_functions import get_mpids_from_file, get_structures_from_materials_project
 from materials_workflows.vasp_functions import get_previous_pass_path, get_structure_from_pass_path, write_workflow_convergence_file
 from materials_workflows.vasp_functions import get_kpoints, write_vasp_convergence_file, workflow_is_converged
-from materials_workflows.vasp_functions import get_minimum_energy_job, move_job_to_pass_path
+from materials_workflows.vasp_functions import get_minimum_energy_job, move_job_to_pass_path, append_to_incars
 from materials_workflows.vasp_convergence.convergence_inputs import bulk_convergence
 
 ################################################
@@ -22,6 +22,7 @@ pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 mp_key = '' # user-specified Materials Project API key
 max_num_mag_structs = 20 # set the maximum number of magnetic samples
+tags_to_add = ['NPAR = 1', 'ISYM = 0']
 ################################################
 
 def generate_input_files(filename, mp_key):
@@ -48,7 +49,9 @@ def generate_input_files(filename, mp_key):
         except:
             print('%s is not magnetic!' % str(structure.formula).replace(' ', ''))
             continue
-
+    
+    append_to_incars(pwd, tags_to_add)
+    
     for root, dirs, files in os.walk(workflow_path):
         for file in files:
             if file == 'POTCAR':
