@@ -148,7 +148,7 @@ def get_paths_from_file(filename):
 
         flattened_entries = [entry for entries_list in all_entries for entry in entries_list]
         for string in flattened_entries:
-            if 'POSCAR' in string and os.path.exists(string): # check to see that it is a location for a POSCAR
+            if os.path.exists(string): # check to see that a location exists for this folder
                 continue
             else:
                 flattened_entries.remove(string)
