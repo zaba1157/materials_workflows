@@ -173,29 +173,28 @@ def get_structures_from_materials_project(mpid_list, mp_key):
     return structures
 
 def get_structures_from_paths(paths_list):
-    
+
     structures = []
-    for path in poscar_paths:
+    for path in paths_list:
         try:
-            poscar_path = os.path.join(paths_list, 'POSCAR')
-            incar_path = os.path.join(paths_list, 'INCAR')
-            
-            incar = Incar.from_file(incar_path)
+            poscar_path = os.path.join(path, 'POSCAR.orig')
+            incar_path = os.path.join(path, 'INCAR.orig')
             try:
+                incar = Incar.from_file(incar_path)
                 magmoms = incar.get('MAGMOM')
                 undecorated_structure = Structure.from_file(poscar_path)
-            
+
                 structure = Structure(lattice=undecorated_structure.lattice,
                              species=undecorated_structure.species,
                              coords=undecorated_structure.frac_coords,
                              site_properties={'magmom':magmoms})
-            
+
                 structures.append(structure)
             except:
                 print('%s does not have a MAGMOM tag' % incar_path)
         except:
-            print('%s not a valid POSCAR OR %s is not a valid INCAR' % (poscar_path, incar_path))
-    
+            print('%s does not contain a valid POSCAR or INCAR' % path)
+
     return structures
 
 
