@@ -10,6 +10,7 @@ import json
 from pymatgen.io.vasp.outputs import Vasprun
 from pymatgen.core.periodic_table import Element
 from pymatgen.analysis.local_env import CrystalNN
+from pymatgen.core.structure import Structure
 from pymatgen.ext.matproj import MPRester
 from tempfile import mkstemp
 from shutil import move,copy
@@ -134,6 +135,28 @@ def get_mpids_from_file(filename):
     
     except:
         print('No file with mp-ids named %s in present working directory %s' % (filename, pwd))
+        
+def get_paths_from_file(filename):
+
+    try:
+        all_entries = []
+        pwd = os.getcwd()
+        with open(os.path.join(pwd, filename)) as f: # The name of the mpid file in the present working directory
+            lines = f.read().splitlines()
+        for line in lines:
+            all_entries.append(line.split())
+
+        flattened_entries = [entry for entries_list in all_entries for entry in entries_list]
+        for string in flattened_entries:
+            if 'POSCAR' in string and os.path.exists(string): # check to see that it is a location for a POSCAR
+                continue
+            else:
+                flattened_entries.remove(string)
+
+        return flattened_entries
+
+    except:
+        print('No file with poscars named %s in present working directory %s' % (filename, pwd))
 
 def get_structures_from_materials_project(mpid_list, mp_key):
     
@@ -148,6 +171,33 @@ def get_structures_from_materials_project(mpid_list, mp_key):
             print('%s not a valid mp-id OR %s is not a valid API key' % (mpid, mp_key))
 
     return structures
+
+def get_structures_from_paths(paths_list):
+    
+    structures = []
+    for path in poscar_paths:
+        try:
+            poscar_path = os.path.join(paths_list, 'POSCAR')
+            incar_path = os.path.join(paths_list, 'INCAR')
+            
+            incar = Incar.from_file(incar_path)
+            try:
+                magmoms = incar.get('MAGMOM')
+                undecorated_structure = Structure.from_file(poscar_path)
+            
+                structure = Structure(lattice=undecorated_structure.lattice,
+                             species=undecorated_structure.species,
+                             coords=undecorated_structure.frac_coords,
+                             site_properties={'magmom':magmoms})
+            
+                structures.append(structure)
+            except:
+                print('%s does not have a MAGMOM tag' % incar_path)
+        except:
+            print('%s not a valid POSCAR OR %s is not a valid INCAR' % (poscar_path, incar_path))
+    
+    return structures
+
 
 def get_unique_coordination_environment_indices(structure, env_tolerance=0):
 
