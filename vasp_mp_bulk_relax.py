@@ -21,7 +21,7 @@ mpids_filename = 'MPIDS' # name of the file from which MPIDS are read; should be
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 mp_key = '' # user-specified Materials Project API key
-tags_to_add = ['NPAR = 2', 'ISYM = 0'] # tags to add to all INCAR files generated
+tags_to_add = ['NPAR = 1', 'ISYM = 0'] # tags to add to all INCAR files generated
 ################################################
 
 def generate_input_files(filename, mp_key, to_scale=True):
