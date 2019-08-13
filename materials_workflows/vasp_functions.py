@@ -272,10 +272,17 @@ def get_structures_with_element_removed(workflow_path, element, structure):
     return structure_list, compound_path     
 
 def structure_scaler(structure_list):
-    
+    # keeps less than 128 atom supercells
     for structure in structure_list:
-
-        if len(structure.species) <= 16:
+        if len(structure.species) <= 2:
+            structure.make_supercell([4, 4, 4])
+        elif len(structure.species) <= 4:
+            structure.make_supercell([3, 3, 3])
+        elif len(structure.species) <= 7:
+            structure.make_supercell([3, 3, 2])
+        elif len(structure.species) <= 10:
+            structure.make_supercell([3, 2, 2])
+        elif len(structure.species) <= 16:
             structure.make_supercell([2, 2, 2])
         elif len(structure.species) <= 32:
             structure.make_supercell([2, 2, 1])
