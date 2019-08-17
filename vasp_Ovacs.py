@@ -23,7 +23,7 @@ from materials_workflows.vasp_functions import get_previous_pass_path, get_struc
 
 ''' Define Global Variables '''
 
-workflow_name = 'o_vacancies'
+workflow_name = 'Ovacs'
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 start_path = get_previous_pass_path(pwd,workflow_name)
