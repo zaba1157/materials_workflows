@@ -6,7 +6,8 @@ Currently only works on Summit and Eagle (SLURM), assuming you already have all 
 
 1) Download package with: git clone https://github.com/zaba1157/materials_workflows.git
 2) Append Install-Directory/materials_workflows to both $PATH and $PYTHONPATH.
-3) Run: python Install-Directory/materials_workflows/setup.py
+3) Run: cd Install-Directory/materials_workflows
+4) Run: python setup.py
 
 # running workflows
 
