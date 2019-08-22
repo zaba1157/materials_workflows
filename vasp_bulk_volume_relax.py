@@ -13,6 +13,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, batch_write_input
 from pymatgen.io.vasp.inputs import Poscar
 from materials_workflows.magnetism.analyzer import MagneticStructureEnumerator
 from shutil import  move, copy
+from pymatgen.core.structure import Structure
 from materials_workflows.magnetism.analyzer import MagneticStructureEnumerator
 from materials_workflows.vasp_functions import get_previous_pass_path, get_structure_from_pass_path, write_workflow_convergence_file
 from materials_workflows.vasp_functions import get_kpoints, write_vasp_convergence_file, workflow_is_converged
@@ -65,8 +66,11 @@ def read_input_files(filename, scale_factors):
         os.mkdir(workflow_path)
 
     paths_list = get_paths_from_file(os.path.join(pwd, filename))
-    structures = get_structures_from_paths(paths_list) #list of structures from filename
-    
+    structures = []
+    for path in paths_list:
+        structure = Structure.from_file(path)
+        structures.append(structure)
+       
     for structure in structures:
         scaled_structures = []
         init_volume = structure.volume
