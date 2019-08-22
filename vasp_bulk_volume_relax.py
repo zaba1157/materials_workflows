@@ -72,13 +72,16 @@ def read_input_files(filename, scale_factors):
         structures.append(structure)
        
     for structure in structures:
+        compound_parent_directory = str(structure.formula).replace(' ', '')
+        compound_path = os.path.join(workflow_path, compound_parent_directory)
+        
         scaled_structures = []
         init_volume = structure.volume
         for sf in scale_factors:
             structure.scale_lattice(sf*init_volume)
             scaled_structures.append(structure)
 
-        batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=workflow_path,
+        batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=compound_path,
                           make_dir_if_not_present=True)
     append_to_incars(pwd, tags_to_add)
 
