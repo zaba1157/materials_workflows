@@ -77,7 +77,7 @@ def read_input_files(filename, scale_factors):
         base_structures.append(base)
         sub_structures.append(structures)
        
-    for base_ind in range(len(base_structures):
+    for base_ind in range(len(base_structures)):
         compound_parent_directory = str(base_structures[base_ind].formula).replace(' ', '')
         compound_path = os.path.join(workflow_path, compound_parent_directory)         
         for structure in sub_structures[base_ind]:
@@ -97,7 +97,7 @@ def read_input_files(filename, scale_factors):
                 kpoints1 = get_kpoints(os.path.join(root, 'POSCAR'), 300)
                 kpoints2 = get_kpoints(os.path.join(root, 'POSCAR'), 1000)
                 natoms = len(Poscar.from_file(os.path.join(root, 'POSCAR')).structure)
-                convergence_writelines = bulk_convergence(kpoints1, kpoints2, natoms)
+                convergence_writelines = volume_bulk_convergence(kpoints1, kpoints2, natoms)
                 write_vasp_convergence_file(root, convergence_writelines)
 
     write_workflow_convergence_file(workflow_path, False)
