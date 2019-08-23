@@ -21,6 +21,8 @@ from materials_workflows.vasp_functions import get_minimum_energy_job, move_job_
 from materials_workflows.vasp_functions import get_paths_from_file, get_structures_from_paths
 from materials_workflows.vasp_convergence.convergence_inputs import volume_bulk_convergence
 
+from scripts.substituted_structures_from_SQS import get_Structures
+
 ################################################
 
 ''' Define Global Variables '''
@@ -31,7 +33,7 @@ paths_filename = 'PATHS'
 pwd = os.getcwd()
 workflow_path = os.path.join(pwd, workflow_name)
 start_path = get_previous_pass_path(pwd, workflow_name)
-
+elements_to_ignore = ['O']
 ################################################
 
 
@@ -66,20 +68,24 @@ def read_input_files(filename, scale_factors):
         os.mkdir(workflow_path)
 
     paths_list = get_paths_from_file(os.path.join(pwd, filename))
-    structures = []
+    base_structures = []
+    sub_structures = []
+    
     for path in paths_list:
-        structure = Structure.from_file(path)
-        structures.append(structure)
+        base = Poscar.from_file(path)
+        structures = get_Structures(path, elements_to_ignore) 
+        base_structures.append(base)
+        sub_structures.append(structures)
        
-    for structure in structures:
-        compound_parent_directory = str(structure.formula).replace(' ', '')
-        compound_path = os.path.join(workflow_path, compound_parent_directory)
-        
-        scaled_structures = []
-        init_volume = structure.volume
-        for sf in scale_factors:
-            structure.scale_lattice(sf*init_volume)
-            scaled_structures.append(structure)
+    for base_ind in range(len(base_structures):
+        compound_parent_directory = str(base_structures[base_ind].formula).replace(' ', '')
+        compound_path = os.path.join(workflow_path, compound_parent_directory)         
+        for structure in sub_structures[base_ind]:
+            scaled_structures = []
+            init_volume = structure.volume
+            for sf in scale_factors:
+                structure.scale_lattice(sf*init_volume)
+                scaled_structures.append(structure)
 
         batch_write_input(scaled_structures, vasp_input_set=MPRelaxSet, output_dir=compound_path,
                           make_dir_if_not_present=True)
