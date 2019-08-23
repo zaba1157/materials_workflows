@@ -118,7 +118,7 @@ def probable_Substitution_Structures(template_structure, dummies, ordered_subs, 
     
     return probable_structures
 
-def get_Structures(template_path, elements_to_ignore, elements_to_include, threshold=0.038):
+def get_Structures(template_path, elements_to_ignore, elements_to_include=elements_to_include, threshold=0.038):
     
     structure = get_Structure_Template(template_path)
     dummies, species = get_Dummies_and_Elements(structure)
