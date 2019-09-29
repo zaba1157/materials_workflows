@@ -464,6 +464,8 @@ def workflow_is_converged(pwd):
                             job = is_converged(root)
                             if job == 'converged':
                                 workflow_converged_list.append(True)
+                            else:
+                                workflow_converged_list.append(False)
                     else:
                         workflow_converged_list.append(False)
                         
