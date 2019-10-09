@@ -442,7 +442,7 @@ def is_converged(path):
         else:
             rerun = 'converged'
 
-        return rerun
+     return rerun
     
 def check_vasp_input(path):
     if os.path.exists(os.path.join(path,'INCAR')) and os.path.exists(os.path.join(path,'KPOINTS')) and os.path.exists(os.path.join(path,'POSCAR')):
