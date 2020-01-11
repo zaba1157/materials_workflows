@@ -412,12 +412,16 @@ def is_converged(path):
             raise Exception('Copy CONVERGENCE file into execution directory to run multistep job. Delete STAGE_NUMBER tag from INCAR for single step job.')
 
         current_stage_number = int(get_incar_value(path, 'STAGE_NUMBER'))
-        ediffg = float(get_incar_value(path,'EDIFFG'))
+        
         if current_stage_number < max_stage_number:
             rerun = 'multi'    #RERUN JOB
         elif current_stage_number == max_stage_number:
             Vr = Vasprun(os.path.join(path, 'vasprun.xml'))
             if Vr.converged != True:        #Job not converge
+                try:
+                    ediffg = float(get_incar_value(path,'EDIFFG'))
+                except:
+                    ediffg = 1 # Assumes EDIFFG is not used so energy criteria instead
                 if ediffg > 0:
                     if Vr.converged_electronic == True:
                         rerun = 'converged'
