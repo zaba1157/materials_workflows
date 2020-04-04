@@ -7,7 +7,7 @@ Created on Tue Jun 18 21:11:04 2019
 
 import os
 import json
-from pymatgen.io.vasp.outputs import Vasprun
+from pymatgen.io.vasp.outputs import Vasprun, Oszicar
 from pymatgen.core.periodic_table import Element
 from pymatgen.analysis.local_env import CrystalNN
 from pymatgen.core.structure import Structure
@@ -19,6 +19,18 @@ import subprocess
 from pymatgen.io.vasp.inputs import Poscar, Incar
 import sys
 import numpy as np
+
+opj = os.path.join
+
+def check_electronic_convergence(path):
+    ediff = get_incar_value(path, 'EDIFF')
+    Os = Oszicar(opj(path, 'OSZICAR'))
+    steps = Os.electronic_steps
+    last = steps[-1][-1]['dE']
+    if abs(last) < ediff:
+        return True 
+    else:
+        return False
 
 def readfile(filename):
     #read a file into a list of strings
@@ -417,13 +429,13 @@ def is_converged(path):
             rerun = 'multi'    #RERUN JOB
         elif current_stage_number == max_stage_number:
             Vr = Vasprun(os.path.join(path, 'vasprun.xml'))
-            if Vr.converged != True:        #Job not converge
+            if False in [Vr.converged, check_electronic_convergence(path)]:        #Job not converge
                 try:
                     ediffg = float(get_incar_value(path,'EDIFFG'))
                 except:
                     ediffg = 1 # Assumes EDIFFG is not used so energy criteria instead
                 if ediffg > 0:
-                    if Vr.converged_electronic == True:
+                    if check_electronic_convergence(path) == True:
                         rerun = 'converged'
 
             else:
@@ -435,8 +447,8 @@ def is_converged(path):
 
     else:                               #Single Relax not NEB job
         Vr = Vasprun(os.path.join(path, 'vasprun.xml'))
-        if Vr.converged != True:        #Job not converge
-            if Vr.converged_electronic != True:
+        if False in [Vr.converged, check_electronic_convergence(path)]:        #Job not converge
+            if check_electronic_convergence(path) != True:
                 rerun = 'single'  #RERUN JOB
             elif Vr.converged_ionic != True and int(get_incar_value(path, 'NSW')) == 0:
                 rerun = 'converged'
