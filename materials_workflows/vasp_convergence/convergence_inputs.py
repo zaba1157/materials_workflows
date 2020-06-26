@@ -5,21 +5,16 @@ Created on Fri Jul 12 13:27:40 2019
 @author: Zach Bare
 """
 
-def Sam_scan_convergence(inital_kpoints, final_kpoints, natoms, tags_to_remove, tags_to_add):
+def Sam_scan_convergence(inital_kpoints, final_kpoints, natoms, tags_to_remove):
     '''
     This function writes the CONVERGENCE file. This will overwrite any INCAR tags specified here.
-    
-    This is very general so change/delete what you want. I have not tested this yet so let me
-    know if there are errors.
     
     Returns: a list of commands to be printed to the CONVERGENCE file. A \n is added automatically 
     for each value (string) in the list .
     
     '''
     remove_tags_string = str(' '.join([t for t in tags_to_remove])) #string of INCAR tags to remove
-    
-    #add_tags_string = list(','.join([str(t) for t in tags_to_add])) #string of INCAR tags to add #may not work
-    
+   
     if natoms < 12:
         npar = 'NPAR = 3'
         kpar = 'KPAR = 4'
@@ -33,25 +28,26 @@ def Sam_scan_convergence(inital_kpoints, final_kpoints, natoms, tags_to_remove, 
         kpar = ' '
         auto_nodes = 'AUTO_NODES = 1' 
         
-
-    step0 = ['\n0 Init_Converge\n',npar,kpar,auto_nodes,
-             'LDAU = False', 'METAGGA = SCAN',
-             'LASPH = True', 'ADDGRID = True',
-             # add strings...
-             # other settings to change....
-             'NSW = 500','ISMEAR = 0','SIGMA=0.05',
-             'EDIFFG = -3E-2','EDIFF = 1e-6','ALGO = Fast',
-             'LORBIT = 11','IOPT = 7','IBRION = 3','POTIM = 0',
-             'ISYM = 0',
-             # can do other kpoints in seperate steps
-             '\nKPOINTS '+str(final_kpoints),
-             #tags to be removed
-            '\nREMOVE '+ remove_tags_string] # the \n are spaces just so it looks better 
+    step0 = ['\n0 Rough_Converge\n', npar,kpar,auto_nodes,
+             'LDAU = .FALSE.', 'METAGGA = SCAN',
+             'LASPH = .TRUE.', 'ADDGRID = .TRUE.',
+             'EDIFFG = -0.05', 'EDIFF = 1E-4','NSW = 500','ISTART = 0', 'LORBIT = 11',
+             'ISYM = 2', 'ALGO = Fast', 'PREC = Normal', 'ISMEAR = 0',
+             'SIGMA = 0.02', 'IOPT = 7', 'POTIM = 0', 'IBRION = 3',
+             'ISIF = 3', 'ISPIN = 2'
+             '\nKPOINTS '+str(inital_kpoints),
+             '\nREMOVE '+ remove_tags_string]
     
-    step1 = ['\n1 Next_Converge\n',#other settings...
-             '\nKPOINTS '+str(final_kpoints)] # not implemented here
-    
-    return step0
+    step1 = ['\n1 Converge\n',
+             'EDIFFG = -0.02', 'ISYM = 0','NELMIN = 4','NELM = 60',
+             'PREC = Accurate',
+             '\nKPOINTS '+str(final_kpoints)]
+      
+    step2 = ['\n2 One_Step\n',
+             'LAECHG = .TRUE.','NSW = 0','NELM = 500','ICHARG = 0','ISTART = 1',
+             'LWAVE = False', 'LVHAR = True', 'ALGO = Normal','NELMIN = 10']
+      
+    return step0 + step1 + step2
 
 
 
