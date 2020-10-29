@@ -98,7 +98,10 @@ def fizzled_job(path):
             rerun = 'single'
    
     return rerun
-    
+
+#TODO: Change Vr.converged:
+#           if not EDIFFG
+#               then default VASP
     
 def is_converged(path):
     job_name = get_job_name(path)
